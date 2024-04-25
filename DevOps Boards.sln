@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opsphere", "Opsphere\Opsphere.csproj", "{18BBDAC2-7A65-45DC-93BE-B088847FC0AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Opsphere.Data", "Opsphere.Data\Opsphere.Data.csproj", "{2596630E-F70D-43D5-A127-980B412DF682}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{18BBDAC2-7A65-45DC-93BE-B088847FC0AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18BBDAC2-7A65-45DC-93BE-B088847FC0AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18BBDAC2-7A65-45DC-93BE-B088847FC0AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18BBDAC2-7A65-45DC-93BE-B088847FC0AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2596630E-F70D-43D5-A127-980B412DF682}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2596630E-F70D-43D5-A127-980B412DF682}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2596630E-F70D-43D5-A127-980B412DF682}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2596630E-F70D-43D5-A127-980B412DF682}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
