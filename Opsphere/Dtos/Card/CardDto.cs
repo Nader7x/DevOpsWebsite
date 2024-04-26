@@ -19,5 +19,5 @@ public class CardDto
     public Status Status { get; set; } = Status.Todo;
     public string Comment { get; set; } = string.Empty;
     public int? ProjectId { get; set; }
-    public int? DeveloperId { get; set; }
+    public int? AssignedDeveloperId { get; set; }
 }

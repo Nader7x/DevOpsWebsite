@@ -58,7 +58,7 @@ namespace Opsphere.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AssignedDeveloperId")
+                    b.Property<int?>("AssignedDeveloperId")
                         .HasColumnType("int");
 
                     b.Property<string>("CommentSection")
@@ -212,8 +212,7 @@ namespace Opsphere.Data.Migrations
                     b.HasOne("Opsphere.Data.Models.ProjectDeveloper", "AssignedDeveloper")
                         .WithMany("AssignedCards")
                         .HasForeignKey("ProjectId", "AssignedDeveloperId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("AssignedDeveloper");
 

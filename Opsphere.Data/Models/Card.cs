@@ -28,7 +28,7 @@ public class Card
     public int? ProjectId { get; set; }
     public Project? Project { get; set; }
     [ForeignKey(nameof(AssignedDeveloper))]
-    public int AssignedDeveloperId { get; set; }
+    public int? AssignedDeveloperId { get; set; }
     public ProjectDeveloper? AssignedDeveloper { get; set; }
     
     public ICollection<CardComment>? CardComments { get; set; }
