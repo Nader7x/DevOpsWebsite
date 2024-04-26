@@ -19,4 +19,8 @@
       <ProjectReference Include="..\Opsphere.Data\Opsphere.Data.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Opsphere.Data\Opsphere.Data.csproj" />
+    </ItemGroup>
+
 </Project>

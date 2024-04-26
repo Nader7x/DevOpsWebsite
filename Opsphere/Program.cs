@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Opsphere.Data;
-using Opsphere.Data.Repos;
+using Opsphere.Data.Repositories;
 using Opsphere.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,8 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
-
-builder.Services.AddScoped<ICardRepository, CardRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 

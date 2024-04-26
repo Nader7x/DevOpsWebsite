@@ -2,7 +2,7 @@
 
 namespace Opsphere.Interfaces;
 
-public interface ICardRepository  : IBaseRepository<Card>
+public interface IUserRepository : IBaseRepository<User>
 {
-
+    
 }

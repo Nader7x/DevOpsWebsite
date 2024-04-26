@@ -1,4 +1,7 @@
-﻿namespace Opsphere.Data.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Opsphere.Data.Models;
 
 public enum Status
 {
@@ -9,21 +12,25 @@ public enum Status
 
 public class Card
 {
-    public int CardId { get; set; }
+    [Key]
+    public int Id { get; set; }
+    [StringLength(50)]
+    [Required]
     public string Title { get; set; } = string.Empty;
+    [StringLength(500)]
     public string Description { get; set; } = string.Empty;
+    [Required]
     public Status Status { get; set; } = Status.Todo;
-    public string Comment { get; set; } = string.Empty;
-
-    public Project? Project { get; set; }
+    [StringLength(1000)]
+    public string CommentSection { get; set; } = string.Empty;
+    [Required]
+    [ForeignKey(nameof(Project))]
     public int? ProjectId { get; set; }
+    public Project? Project { get; set; }
+    [ForeignKey(nameof(AssignedDeveloper))]
+    public int AssignedDeveloperId { get; set; }
+    public ProjectDeveloper? AssignedDeveloper { get; set; }
     
-    //The team leader that created this card, he is the only one who can delete it
-    public TeamLeader? TeamLeader { get; set; }
-    public int? TeamLeaderId { get; set; }
-    
-    public Developer? Developer { get; set; }
-    public int? DeveloperId { get; set; }
-    
-    
+    public ICollection<CardComment>? CardComments { get; set; }
+    public Attachment? Attachment { get; set; }
 }

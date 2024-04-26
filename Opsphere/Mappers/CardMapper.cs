@@ -10,9 +10,9 @@ public static class CardMapper
     {
         return new CardDto
         {
-            CardId = cardModel.CardId,
+            CardId = cardModel.Id,
             Title = cardModel.Title,
-            Comment = cardModel.Comment,
+            Comment = cardModel.CommentSection,
             Description = cardModel.Description,
             Status = (Status)cardModel.Status,
         };
@@ -22,7 +22,7 @@ public static class CardMapper
     {
         return new Card
         {
-            Comment = cardDto.Comment,
+            CommentSection = cardDto.Comment,
             Description = cardDto.Description,
             ProjectId = projectId,
             Title = cardDto.Title,
