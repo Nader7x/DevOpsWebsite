@@ -13,7 +13,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var cards = await unitOfWork.CardRepository.GetAllAsync();
-        var cardsDto = cards.Select( c => c.ToCardDto());
+        var cardsDto =  cards.Select( c => c.ToCardDto());
         return Ok(cardsDto);
     }
     [HttpPost("{projectId:int}")]

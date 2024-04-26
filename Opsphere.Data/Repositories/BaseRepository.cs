@@ -8,7 +8,7 @@ public class BaseRepository<T>(ApplicationDbContext dbContext) : IBaseRepository
 {
     public async Task<IEnumerable<T>> GetAllAsync()
     {
-        return await dbContext.Set<T>().ToListAsync();
+        return await dbContext.Set<T>().AsNoTracking().ToListAsync();
     }
 
     public async Task<T?> GetByIdAsync(int id)
