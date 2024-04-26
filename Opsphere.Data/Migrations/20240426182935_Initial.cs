@@ -76,7 +76,7 @@ namespace Opsphere.Data.Migrations
                     Status = table.Column<int>(type: "int", nullable: false),
                     CommentSection = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     ProjectId = table.Column<int>(type: "int", nullable: false),
-                    AssignedDeveloperId = table.Column<int>(type: "int", nullable: false)
+                    AssignedDeveloperId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {

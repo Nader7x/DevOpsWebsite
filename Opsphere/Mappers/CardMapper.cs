@@ -15,6 +15,8 @@ public static class CardMapper
             Comment = cardModel.CommentSection,
             Description = cardModel.Description,
             Status = (Status)cardModel.Status,
+            ProjectId = cardModel.ProjectId,
+            AssignedDeveloperId = cardModel.AssignedDeveloperId
         };
     }
 
@@ -29,4 +31,6 @@ public static class CardMapper
             Status = Data.Models.Status.Todo,
         };
     }
+
+    
 }

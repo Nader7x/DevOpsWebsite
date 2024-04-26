@@ -13,5 +13,4 @@ public class Project
     public string? Description { get; set; }
     public ICollection<Card>? Cards { get; set; }
     public ICollection<ProjectDeveloper> ProjectDevelopers { get; set; }
-    
 }
