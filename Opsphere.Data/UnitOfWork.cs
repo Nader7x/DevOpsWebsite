@@ -12,6 +12,7 @@ public class UnitOfWork : IUnitOfWork
     public IProjectDeveloperRepository ProjectDeveloperRepository { get; private set; }
     public IAttachmentRepository AttachmentRepository { get; private set; }
     public ICardCommentRepository CardCommentRepository { get; private set; }
+    public INotificationRepository NotificationRepository { get; private set; }
 
     public UnitOfWork(ApplicationDbContext dbContext)
     {
@@ -22,6 +23,7 @@ public class UnitOfWork : IUnitOfWork
         ProjectDeveloperRepository = new ProjectDeveloperRepository(_dbContext);
         AttachmentRepository = new AttachmentRepository(_dbContext);
         CardCommentRepository = new CardCommentRepository(_dbContext);
+        NotificationRepository = new NotificationRepository(_dbContext);
     }
     public async void Dispose()
     {

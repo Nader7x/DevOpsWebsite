@@ -12,8 +12,8 @@ using Opsphere.Data;
 namespace Opsphere.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240426182935_Initial")]
-    partial class Initial
+    [Migration("20240427191305_addedNotification")]
+    partial class addedNotification
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -121,6 +121,30 @@ namespace Opsphere.Data.Migrations
                     b.ToTable("CardComments");
                 });
 
+            modelBuilder.Entity("Opsphere.Data.Models.Notification", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<int>("userId")
+                        .HasColumnType("int");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("Opsphere.Data.Models.Project", b =>
                 {
                     b.Property<int>("Id")
@@ -151,6 +175,9 @@ namespace Opsphere.Data.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int")
                         .HasColumnOrder(1);
+
+                    b.Property<bool>("IsMemeber")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsTeamLeader")
                         .HasColumnType("bit");

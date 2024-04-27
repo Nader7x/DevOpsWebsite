@@ -18,4 +18,5 @@ public class ProjectDeveloper
    
     public User? User { get; set; }
     public ICollection<Card>? AssignedCards { get; set; }
+    public bool IsMemeber { get; set; } = false;
 }

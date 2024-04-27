@@ -45,5 +45,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<ProjectDeveloper> ProjectDevelopers { get; set; }
     public DbSet<CardComment> CardComments { get; set; }
     public DbSet<Attachment> Attachments { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
 
 }

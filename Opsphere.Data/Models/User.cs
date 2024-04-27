@@ -26,5 +26,6 @@ public class User
     public string? Password { get; init; }
 
     public ICollection<ProjectDeveloper>? ProjectDevelopers { get; set; }
+    // public ICollection<Notification>? UserNotifications { get; set; }
     
 }

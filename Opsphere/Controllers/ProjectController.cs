@@ -80,10 +80,20 @@ public class ProjectController(IUnitOfWork unitOfWork)  : ControllerBase
         {
             ProjectId = projectId,
             UserId = developerId,
-            IsTeamLeader = false
+            IsTeamLeader = false,
+            isMember = false
+        };       
+        var ProjectName = unitOfWork.ProjectRepository.GetProjectNameByIdAsync(projectId);
+
+        var Notification = new Notification()
+        {
+            Type = NotificationType.ProjectInvite,
+            Content = $"You have been invited to join project {ProjectName} as a developer.",
+            userId = developerId,
         };
         var projectDeveloper = projectDevDto.AddDeveloperToProject();
         await unitOfWork.ProjectDeveloperRepository.AddAsync(projectDeveloper);
+        await unitOfWork.NotificationRepository.AddAsync(Notification);
         try
         {
             await unitOfWork.CompleteAsync();
@@ -92,9 +102,7 @@ public class ProjectController(IUnitOfWork unitOfWork)  : ControllerBase
         {
             return BadRequest(e.Message + "Maybe the developer is already in the project or doesn't exit");
         }
+
         return Ok();
     }
-
-
-
 }

@@ -5,11 +5,26 @@
 namespace Opsphere.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class addedNotification : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                    userId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Projects",
                 columns: table => new
@@ -46,7 +61,8 @@ namespace Opsphere.Data.Migrations
                 {
                     ProjectId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    IsTeamLeader = table.Column<bool>(type: "bit", nullable: false)
+                    IsTeamLeader = table.Column<bool>(type: "bit", nullable: false),
+                    IsMemeber = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -176,6 +192,9 @@ namespace Opsphere.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "CardComments");
+
+            migrationBuilder.DropTable(
+                name: "Notifications");
 
             migrationBuilder.DropTable(
                 name: "Cards");
