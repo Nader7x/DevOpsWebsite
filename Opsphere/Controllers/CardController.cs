@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using Opsphere.Data.Models;
 using Opsphere.Dtos.Card;
 using Opsphere.Interfaces;
 using Opsphere.Mappers;
@@ -70,13 +73,6 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
         cardModel.Title = cardDto.Title;
         cardModel.Description = cardDto.Description;
         cardModel.CommentSection = cardDto.Comment;
-
-        if (cardDto.Status == "done")
-            cardModel.Status = Status.Done;
-        else if (cardDto.Status == "inprogress")
-            cardModel.Status = Status.InProgress;
-        else
-            cardModel.Status = Status.Todo;
         
         
         unitOfWork.CardRepository.UpdateAsync(cardModel);
@@ -84,5 +80,29 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
 
         return Ok(cardModel);
 
+    }
+
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> Patch([FromRoute] int id, [FromBody] JsonPatchDocument<Card>? patchDoc)
+    {
+        if (patchDoc != null)
+        {
+            var cardModel = await unitOfWork.CardRepository.GetByIdAsync(id);
+            
+            if (cardModel == null)
+            {
+                return NotFound();
+            }
+
+            patchDoc.ApplyTo(cardModel, ModelState);
+
+            await unitOfWork.CompleteAsync();
+
+            return !ModelState.IsValid ? BadRequest(ModelState) : new ObjectResult(cardModel);
+        }
+        else
+        {
+            return BadRequest(ModelState);
+        }
     }
 }
