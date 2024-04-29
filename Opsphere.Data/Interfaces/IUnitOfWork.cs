@@ -1,4 +1,4 @@
-﻿namespace Opsphere.Interfaces;
+﻿namespace Opsphere.Data.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {

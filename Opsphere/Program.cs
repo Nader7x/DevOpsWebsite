@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Converters;
 using Opsphere.Data;
+using Opsphere.Data.Interfaces;
 using Opsphere.Data.Repositories;
-using Opsphere.Interfaces;
+using Opsphere.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,8 @@ builder.Services.AddControllers()
     {
         options.SerializerSettings.Converters.Add(new StringEnumConverter());
     });
+
+builder.Services.AddSignalR();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -36,5 +39,6 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 
+app.MapHub<NotificationService>("/Notification");
 
 app.Run();

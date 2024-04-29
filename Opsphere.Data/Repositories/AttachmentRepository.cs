@@ -1,5 +1,5 @@
-﻿using Opsphere.Data.Models;
-using Opsphere.Interfaces;
+﻿using Opsphere.Data.Interfaces;
+using Opsphere.Data.Models;
 
 namespace Opsphere.Data.Repositories;
 

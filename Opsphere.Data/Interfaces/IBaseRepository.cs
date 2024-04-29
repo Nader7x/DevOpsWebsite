@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace Opsphere.Interfaces;
+namespace Opsphere.Data.Interfaces;
 
 public interface IBaseRepository <T> where T : class
 {

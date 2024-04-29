@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Opsphere.Interfaces;
+using Opsphere.Data.Interfaces;
 
 namespace Opsphere.Data.Repositories;
 

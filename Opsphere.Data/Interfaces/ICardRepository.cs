@@ -1,6 +1,6 @@
 ﻿using Opsphere.Data.Models;
 
-namespace Opsphere.Interfaces;
+namespace Opsphere.Data.Interfaces;
 
 public interface ICardRepository  : IBaseRepository<Card>
 {

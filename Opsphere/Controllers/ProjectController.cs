@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Opsphere.Data.Interfaces;
 using Opsphere.Data.Models;
 using Opsphere.Dtos.Project;
-using Opsphere.Interfaces;
 using Opsphere.Mappers;
 
 namespace Opsphere.Controllers;
@@ -23,6 +23,7 @@ public class ProjectController(IUnitOfWork unitOfWork)  : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Create([FromBody]CreateProjectDto projectDto)
     {
          var project = projectDto.CreateProjectDtoToProject();
@@ -83,26 +84,33 @@ public class ProjectController(IUnitOfWork unitOfWork)  : ControllerBase
             IsTeamLeader = false,
             isMember = false
         };       
-        var ProjectName = unitOfWork.ProjectRepository.GetProjectNameByIdAsync(projectId);
+        var projectName = await unitOfWork.ProjectRepository.GetProjectNameByIdAsync(projectId);
 
-        var Notification = new Notification()
+        var notification = new Notification()
         {
             Type = NotificationType.ProjectInvite,
-            Content = $"You have been invited to join project {ProjectName} as a developer.",
+            Content = $"You have been invited to join project {projectName} as a developer.",
             userId = developerId,
         };
         var projectDeveloper = projectDevDto.AddDeveloperToProject();
         await unitOfWork.ProjectDeveloperRepository.AddAsync(projectDeveloper);
-        await unitOfWork.NotificationRepository.AddAsync(Notification);
         try
         {
+            await unitOfWork.CompleteAsync();
+            await unitOfWork.NotificationRepository.AddAsync(notification);
             await unitOfWork.CompleteAsync();
         }
         catch (Exception e)
         {
             return BadRequest(e.Message + "Maybe the developer is already in the project or doesn't exit");
         }
-
         return Ok();
+    }
+
+    [HttpGet("{userid:int}")]
+    public async Task<IActionResult> GetUserNotifications([FromRoute]int userid)
+    {
+        var notifications = await unitOfWork.NotificationRepository.UserNotificationsById(userid);
+        return Ok(notifications);
     }
 }

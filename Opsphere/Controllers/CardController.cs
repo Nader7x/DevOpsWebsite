@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Opsphere.Data.Interfaces;
 using Opsphere.Dtos.Card;
-using Opsphere.Interfaces;
 using Opsphere.Mappers;
 using Status = Opsphere.Data.Models.Status;
 

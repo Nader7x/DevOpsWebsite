@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Opsphere.Data.Interfaces;
 using Opsphere.Data.Models;
-using Opsphere.Interfaces;
 
 namespace Opsphere.Data.Repositories;
 
