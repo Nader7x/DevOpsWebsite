@@ -7,5 +7,5 @@ namespace Opsphere.Data.Repositories;
 
 public class CardRepository(ApplicationDbContext context) : BaseRepository<Card>(context), ICardRepository
 {
-
+    
 }
