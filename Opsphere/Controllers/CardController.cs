@@ -80,8 +80,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
             cardModel.Status = Status.InProgress;
         else
             cardModel.Status = Status.Todo;
-        
-        
+
         unitOfWork.CardRepository.UpdateAsync(cardModel);
         await unitOfWork.CompleteAsync();
 

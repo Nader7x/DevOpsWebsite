@@ -5,7 +5,8 @@ namespace Opsphere.Data.Models;
 public enum UserRoles
 {
     TeamLeader,
-    Developer
+    Developer,
+    Admin
 }
 
 public class User

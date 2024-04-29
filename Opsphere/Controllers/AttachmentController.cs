@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Opsphere.Data.Interfaces;
 using Opsphere.Dtos.Attachment;
-using Opsphere.Interfaces;
+using Opsphere.Data.Interfaces;
 using Opsphere.Mappers;
 
 namespace Opsphere.Controllers;
