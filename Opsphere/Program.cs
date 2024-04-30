@@ -6,6 +6,7 @@ using Newtonsoft.Json.Converters;
 using Opsphere.Data;
 using Opsphere.Data.Interfaces;
 using Opsphere.Data.Repositories;
+using Opsphere.Helpers;
 using Opsphere.Services;
 
 var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -54,6 +55,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddAutoMapper(typeof(MappingProfiles));
 
 builder.Services.AddCors(options =>
 {

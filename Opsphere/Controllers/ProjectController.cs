@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Extensions;
 using Opsphere.Data.Interfaces;
 using Opsphere.Data.Models;
 using Opsphere.Dtos.Project;
@@ -13,17 +15,26 @@ public class ProjectController(IUnitOfWork unitOfWork)  : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [Authorize]
     public async Task<IActionResult> GetAll()
     {
-        var projects = await unitOfWork.ProjectRepository.GetAllAsync();
-        var projectsDto = projects.Select(p => p.PrjectToProjectDto());
-        return Ok(projectsDto);
+        var user = User;
+        if (user.IsInRole("TeamLeader") || user.IsInRole("Admin"))
+        {
+            var projects = await unitOfWork.ProjectRepository.GetAllAsync();
+            var projectsDto = projects.Select(p => p.PrjectToProjectDto());
+            return Ok(projectsDto);  
+        }
+        return Forbid();
     }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [Authorize(Roles = "TeamLeader,Admin")]
     public async Task<IActionResult> Create([FromBody]CreateProjectDto projectDto)
     {
          var project = projectDto.CreateProjectDtoToProject();
@@ -36,10 +47,11 @@ public class ProjectController(IUnitOfWork unitOfWork)  : ControllerBase
          {
              return BadRequest(e.Message);
          }
-         return Created();
+         return Ok();
     }
     [HttpPut("{id:int}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(Roles = "TeamLeader,Admin")]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateProjectDto projectDto)
     {
         var project = await unitOfWork.ProjectRepository.GetByIdAsync(id);
@@ -62,6 +74,7 @@ public class ProjectController(IUnitOfWork unitOfWork)  : ControllerBase
         return Ok();
     }
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "TeamLeader,Admin")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
         var project = await unitOfWork.ProjectRepository.GetByIdAsync(id);
@@ -75,6 +88,7 @@ public class ProjectController(IUnitOfWork unitOfWork)  : ControllerBase
     }
 
     [HttpPost("{projectId:int}/developer/{developerId:int}")]
+    [Authorize(Roles = "TeamLeader,Admin")]
     public async Task<IActionResult> AddDeveloper([FromRoute]int projectId,[FromRoute]int developerId)
     {
         var projectDevDto = new AddDevDto()
