@@ -26,4 +26,8 @@
       <ProjectReference Include="..\Opsphere.Data\Opsphere.Data.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="uploads\" />
+    </ItemGroup>
+
 </Project>
