@@ -13,7 +13,7 @@ public class UserRepository(ApplicationDbContext dbContext) : BaseRepository<Use
         return _dbContext.Users.AnyAsync(u => u.Username == username);
     }
 
-    public async Task<User?> Getbyusername(string username)
+    public async Task<User?> Getbyusername(string? username)
     {
         return await _dbContext.Users.FirstOrDefaultAsync(u => u != null && u.Username == username);
     }

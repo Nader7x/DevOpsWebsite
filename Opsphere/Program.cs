@@ -7,6 +7,7 @@ using Newtonsoft.Json.Converters;
 using Opsphere.Data;
 using Opsphere.Data.Interfaces;
 using Opsphere.Data.Repositories;
+using Opsphere.Helpers;
 using Opsphere.Services;
 
 var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -56,6 +57,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddAutoMapper(typeof(MappingProfiles));
 IFileProvider physicalProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
 builder.Services.AddSingleton<IFileProvider>(physicalProvider);
 
@@ -68,7 +70,6 @@ builder.Services.AddCors(options =>
         });
 });
 builder.Services.AddScoped<ITokenService, TokenService>();
-// builder.Services.AddSingleton<IFileProvider, PhysicalFileProvider>();
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = 
