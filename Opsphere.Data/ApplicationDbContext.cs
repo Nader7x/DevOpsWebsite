@@ -41,7 +41,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Project> Projects { get; init; }
     public DbSet<Card> Cards { get; init; }
     public DbSet<User?> Users { get; set; }
-    public DbSet<ProjectDeveloper> ProjectDevelopers { get; set; }
+    public DbSet<ProjectDeveloper?> ProjectDevelopers { get; set; }
     public DbSet<CardComment> CardComments { get; set; }
     public DbSet<Attachment> Attachments { get; set; }
     public DbSet<Notification> Notifications { get; set; }
