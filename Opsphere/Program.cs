@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
@@ -11,6 +12,7 @@ using Opsphere.Services;
 
 var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -56,6 +58,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => {
 });
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddAutoMapper(typeof(MappingProfiles));
+IFileProvider physicalProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
+builder.Services.AddSingleton<IFileProvider>(physicalProvider);
 
 builder.Services.AddCors(options =>
 {
@@ -94,6 +98,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 var app = builder.Build();
+var env = app.Environment;
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -108,7 +113,14 @@ app.UseHttpsRedirection();
 
 app.UseCors(MyAllowSpecificOrigins);
 
-
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "uploads")),
+    RequestPath = "/uploads"
+});
 app.MapControllers();
 
 app.MapHub<NotificationService>("/Notification");
