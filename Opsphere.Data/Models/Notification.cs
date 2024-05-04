@@ -13,12 +13,14 @@ public enum NotificationType
 public class Notification
 {
     [Key]
-    public int id { get; set; }
+    public int Id { get; set; }
     [Required]
     public  NotificationType Type { get; set; }
     [Required]
     [MaxLength(250)]
-    public String Content { get; set; }
-    public int userId { get; set; }
-    private bool isRead { get; set; } = false;
+    public string? Content { get; set; }
+    public int UserId { get; set; }
+
+    public DateTime NotificationDate { get; set; } = DateTime.UtcNow;
+    private bool IsRead { get; set; } = false;
 }

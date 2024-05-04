@@ -12,7 +12,6 @@ public static class CardMapper
         {
             CardId = cardModel.Id,
             Title = cardModel.Title,
-            Comment = cardModel.CommentSection,
             Description = cardModel.Description,
             Status = (Status)cardModel.Status,
             ProjectId = cardModel.ProjectId,
@@ -24,7 +23,6 @@ public static class CardMapper
     {
         return new Card
         {
-            CommentSection = cardDto.Comment,
             Description = cardDto.Description,
             ProjectId = projectId,
             Title = cardDto.Title,

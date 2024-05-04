@@ -12,8 +12,8 @@ using Opsphere.Data;
 namespace Opsphere.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240427191305_addedNotification")]
-    partial class addedNotification
+    [Migration("20240504154522_FileUrl")]
+    partial class FileUrl
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,14 +36,15 @@ namespace Opsphere.Data.Migrations
                     b.Property<int>("CardId")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("File")
+                    b.Property<string>("FilePath")
                         .IsRequired()
-                        .HasColumnType("varbinary(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("FileName")
+                    b.Property<string>("FileUrl")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
@@ -63,11 +64,6 @@ namespace Opsphere.Data.Migrations
 
                     b.Property<int?>("AssignedDeveloperId")
                         .HasColumnType("int");
-
-                    b.Property<string>("CommentSection")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -123,24 +119,27 @@ namespace Opsphere.Data.Migrations
 
             modelBuilder.Entity("Opsphere.Data.Models.Notification", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
+                    b.Property<DateTime>("NotificationDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
-                    b.Property<int>("userId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.ToTable("Notifications");
                 });

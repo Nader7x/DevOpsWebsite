@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Opsphere.Data.Models;
 
@@ -19,10 +21,9 @@ public class Card
     public string Title { get; set; } = string.Empty;
     [StringLength(500)]
     public string Description { get; set; } = string.Empty;
-    [Required]
+
+    [JsonConverter(typeof(StringEnumConverter))]
     public Status Status { get; set; } = Status.Todo;
-    [StringLength(1000)]
-    public string CommentSection { get; set; } = string.Empty;
     [Required]
     [ForeignKey(nameof(Project))]
     public int? ProjectId { get; set; }

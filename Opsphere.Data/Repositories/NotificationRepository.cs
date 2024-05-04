@@ -10,6 +10,6 @@ public class NotificationRepository(ApplicationDbContext dbContext) : BaseReposi
 
     public async Task<List<Notification>> UserNotificationsById(int userId)
     {
-       return await _dbContext.Notifications.Where(n => n.userId == userId).ToListAsync();
+       return await _dbContext.Notifications.Where(n => n.UserId == userId).ToListAsync();
     }
 }

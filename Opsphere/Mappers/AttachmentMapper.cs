@@ -10,9 +10,6 @@ public static class AttachmentMapper
         return new Attachment
         {
             CardId = cardId,
-            FileName = attachmentDto.FileName,
-            File = attachmentDto.File,
-            
         };
     }
 
@@ -20,9 +17,9 @@ public static class AttachmentMapper
     {
         return new AttachmentDto
         {
-            File = attachmentModel.File,
-            FileName = attachmentModel.FileName,
-            CardId = attachmentModel.CardId
+            FilePath = attachmentModel.FilePath,
+            CardId = attachmentModel.CardId,
+            FileUrl = attachmentModel.FileUrl
         };
     }
 }

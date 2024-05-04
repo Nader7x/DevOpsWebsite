@@ -57,7 +57,6 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
     [Authorize(Roles = "TeamLeader,Admin")]
     public async Task<IActionResult> Create([FromRoute] int projectId, [FromBody] CreateCardDto cardDto)
     {
-        //to-do check that the project exists via project Id
         var cardModel = cardDto.ToCardFromCreate(projectId);
         await unitOfWork.CardRepository.AddAsync(cardModel);
         await unitOfWork.CompleteAsync();
@@ -81,7 +80,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
         return Ok(cardModel);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     [Authorize(Roles = "TeamLeader,Admin,Developer")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateCardDto cardDto)
@@ -101,7 +100,6 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
 
         cardModel.Title = cardDto.Title;
         cardModel.Description = cardDto.Description;
-        cardModel.CommentSection = cardDto.Comment;
 
         unitOfWork.CardRepository.UpdateAsync(cardModel);
         await unitOfWork.CompleteAsync();
