@@ -11,8 +11,9 @@ using Status = Opsphere.Data.Models.Status;
 
 namespace Opsphere.Controllers;
 
-[Route("Opsphere/card")]
-[ApiController]
+[Route("Opsphere/card"), ProducesResponseType(StatusCodes.Status200OK),
+ ProducesResponseType(StatusCodes.Status401Unauthorized),
+ ProducesResponseType(StatusCodes.Status500InternalServerError), ApiController]
 public class CardController(IUnitOfWork unitOfWork) : ControllerBase
 {
     private bool IsUserAllowedToEditCard(Card card)
@@ -65,6 +66,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
 
     [HttpDelete("{id}")]
     [Authorize(Roles = "TeamLeader,Admin")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
         var cardModel = await unitOfWork.CardRepository.GetByIdAsync(id);
@@ -83,6 +85,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
     [HttpPut("{id:int}")]
     [Authorize(Roles = "TeamLeader,Admin,Developer")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateCardDto cardDto)
     {
         var user = unitOfWork.UserRepository.Getbyusername(User.GetUsername());
@@ -110,6 +113,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
     [HttpPatch("{id}")]
     [Authorize(Roles = "TeamLeader,Admin,Developer")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Patch([FromRoute] int id, [FromBody] JsonPatchDocument<Card>? patchDoc)

@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Opsphere.Data.Interfaces;
 using Opsphere.Data.Models;
 using Opsphere.Dtos.User;
 using Opsphere.Helpers;
-using Opsphere.Services;
 
 namespace Opsphere.Controllers;
-
+[ProducesResponseType(StatusCodes.Status200OK)]  
+[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+[ProducesResponseType(StatusCodes.Status400BadRequest)]
 [ApiController]
 [Route("Opsphere/User")]
 public class UserController(ITokenService tokenService, IUnitOfWork unitOfWork) : ControllerBase
@@ -19,7 +21,7 @@ public class UserController(ITokenService tokenService, IUnitOfWork unitOfWork) 
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest();
+            return BadRequest("Please try Again");
         }
 
         var hashedPassword = UserHandler.HashPassword(registerDto.Password);
@@ -50,27 +52,25 @@ public class UserController(ITokenService tokenService, IUnitOfWork unitOfWork) 
     public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
     {
         var user = await _unitOfWork.UserRepository.Getbyusername(loginDto.Username);
-
-        if (user != null && user.Username.Equals(loginDto.Username, StringComparison.Ordinal))
+        if (user?.Username != null && (!user.Username.Equals(loginDto.Username, StringComparison.Ordinal)))
+            return BadRequest("wrong Credentials");
+        var passwordMatch = user?.Password != null && UserHandler.VerifyPassword(loginDto.Password, user.Password);
+        if (!passwordMatch)
         {
-            var passwordMatch = user.Password != null && UserHandler.VerifyPassword(loginDto.Password, user.Password);
-            if (!passwordMatch)
-            {
-                return BadRequest("Wrong Credentials");
-            }
-
-            return Ok(new UserDto()
-            {
-                Username = user.Username,
-                Email = user.Email,
-                Token = _tokenService.CreateToken(user)
-            });
+            return BadRequest("Wrong Credentials");
         }
 
-        return BadRequest("wrong Credentials");
+        return Ok(new UserDto()
+        {
+            Username = user?.Username,
+            Email = user?.Email,
+            Token = _tokenService.CreateToken(user)
+        });
+
     }
 
     [HttpGet("GetCurrentUserName")]
+    [Authorize(Roles = "Admin")]
     public Task<IActionResult> GetUserName()
     {
         return Task.FromResult<IActionResult>(Ok(User.GetUsername()));
@@ -79,22 +79,24 @@ public class UserController(ITokenService tokenService, IUnitOfWork unitOfWork) 
     [HttpPatch("AcceptInvite/{userid:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Authorize(Roles = "Admin,Developer")]
     public async Task<IActionResult> Accept([FromRoute]int userid)
     {
         var projectDev = await _unitOfWork.ProjectDeveloperRepository.GetByDevIdAsync(userid);
-        if (projectDev == null || projectDev.IsMemeber == true)
+        if (projectDev is null or { IsMemeber: true })
         {
-            return BadRequest("User is already a member or not invited");
+            return BadRequest("you already a member or not invited");
         }
         projectDev.IsMemeber = true;
         await _unitOfWork.CompleteAsync();
         return Ok();
     }
-    [HttpGet("{userid:int}")]
+    [HttpGet("UserNotifications/{userid:int}")]  
+    [Authorize(Roles = "Admin,Developer,TeamLeader")]
     public async Task<IActionResult> GetUserNotifications([FromRoute] int userid)
     {
         var notifications = await _unitOfWork.NotificationRepository.UserNotificationsById(userid);
-        IOrderedEnumerable<Notification> orderedNotifications = notifications.OrderBy(n => n.NotificationDate) ?? throw new ArgumentNullException("notifications.OrderBy(n => n.NotificationDate)");
+        var orderedNotifications = notifications.OrderBy(n => n.NotificationDate);
         return Ok(orderedNotifications);
     }
     

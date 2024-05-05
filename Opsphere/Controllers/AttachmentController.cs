@@ -1,21 +1,18 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileProviders;
 using Opsphere.Data.Interfaces;
 using Opsphere.Dtos.Attachment;
-using Opsphere.Data.Interfaces;
 using Opsphere.Data.Models;
 using Opsphere.Mappers;
 
 namespace Opsphere.Controllers;
 
-[ApiController]
-[Route("Opsphere/Attachment")]
-public class AttachmentController(IUnitOfWork unitOfWork, IWebHostEnvironment env, IFileProvider fileProvider)
+[Authorize, ProducesResponseType(StatusCodes.Status200OK), ProducesResponseType(StatusCodes.Status401Unauthorized),
+ ProducesResponseType(StatusCodes.Status500InternalServerError), ApiController, Route("Opsphere/Attachment")]
+public class AttachmentController(IUnitOfWork unitOfWork, IWebHostEnvironment env)
     : ControllerBase
 {
     private readonly IWebHostEnvironment _env = env;
-    private readonly IFileProvider _fileProvider = fileProvider;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
     [HttpGet("{id}")]
@@ -41,49 +38,42 @@ public class AttachmentController(IUnitOfWork unitOfWork, IWebHostEnvironment en
         }
 
         var resourceUrl = $"https://localhost:7157/uploads/{createAttachmentDto?.File?.FileName}";
-        var filePath = string.Empty;
-        if (createAttachmentDto?.File?.FileName != null)
-        {
-            filePath = Path.Combine(_env.ContentRootPath, "uploads", createAttachmentDto.File.FileName);
-            if (createAttachmentDto.File.Length <= 0) return BadRequest("Failed to upload the file");
-            await using var stream = new FileStream(filePath, FileMode.Create);
+        if (createAttachmentDto?.File?.FileName == null) return Ok("File uploaded successfully!");
+        var filePath = Path.Combine(_env.ContentRootPath, "uploads", createAttachmentDto.File.FileName);
+        if (createAttachmentDto.File.Length <= 0) return BadRequest("Failed to upload the file");
+        await using var stream = new FileStream(filePath, FileMode.Create);
 
-            var attachment = createAttachmentDto.ToAttachmentFromCreate(cardId);
-            attachment.FileUrl = resourceUrl;
-            attachment.FilePath = filePath;
-            await _unitOfWork.AttachmentRepository.AddAsync(attachment);
-            try
-            { 
-                await _unitOfWork.CompleteAsync();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return BadRequest("This Card Already had an Attachment");
-            }
-
-            await createAttachmentDto.File.CopyToAsync(stream);
+        var attachment = createAttachmentDto.ToAttachmentFromCreate(cardId);
+        attachment.FileUrl = resourceUrl;
+        attachment.FilePath = filePath;
+        await _unitOfWork.AttachmentRepository.AddAsync(attachment);
+        try
+        { 
+            await _unitOfWork.CompleteAsync();
         }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("This Card Already had an Attachment");
+        }
+
+        await createAttachmentDto.File.CopyToAsync(stream);
         return Ok("File uploaded successfully!");
     }
 
     [HttpGet("CardAttachment/{cardId:int}")]
     public async Task<IActionResult> Serve([FromRoute] int cardId)
     {
+        var card = await _unitOfWork.CardRepository.GetByIdAsync(cardId);
+        if (card is not { Status: Status.Done }) return BadRequest("No Attachment Found");
         var attachment = await _unitOfWork.AttachmentRepository.GetByCardId(cardId);
-        if (attachment != null && !string.IsNullOrEmpty(attachment.FilePath))
-        {
-            if (System.IO.File.Exists(attachment.FilePath))
-            {
-                string contentType = GetContentType(Path.GetExtension(attachment.FilePath));
-                return PhysicalFile(attachment.FilePath, contentType);
-            }
-        }
-
-        return BadRequest("No Attachment Found");
+        if (attachment == null || string.IsNullOrEmpty(attachment.FilePath)) return BadRequest("No Attachment Found");
+        if (!System.IO.File.Exists(attachment.FilePath)) return BadRequest("No Attachment Found");
+        var contentType = GetContentType(Path.GetExtension(attachment.FilePath));
+        return PhysicalFile(attachment.FilePath, contentType);
     }
 
-    private string GetContentType(string fileExtension)
+    private static string GetContentType(string fileExtension)
     {
         switch (fileExtension.ToLower())
         {

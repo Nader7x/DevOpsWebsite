@@ -57,6 +57,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+// builder.Services.AddScoped<NotificationService>();
 builder.Services.AddAutoMapper(typeof(MappingProfiles));
 IFileProvider physicalProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
 builder.Services.AddSingleton<IFileProvider>(physicalProvider);
@@ -67,9 +68,9 @@ builder.Services.AddCors(options =>
         policy  =>
         {
             policy.WithOrigins("http://localhost:3000")
-                .AllowCredentials()
+                .AllowAnyHeader()
                 .AllowAnyMethod()
-                .AllowAnyHeader();
+                .AllowCredentials();
         });
 });
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -123,6 +124,6 @@ app.UseStaticFiles(new StaticFileOptions
 });
 app.MapControllers();
 
-app.MapHub<NotificationService>("/Notification");
+app.MapHub<NotificationService>("Notify");
 
 app.Run();

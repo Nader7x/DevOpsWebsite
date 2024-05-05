@@ -2,5 +2,6 @@
 
 public interface INotificationService
 {
-    Task SendNotification(int id, string messege);
+    // Task SendNotification(string userId,string notification);
+    Task SendNotification(string notification);
 }
