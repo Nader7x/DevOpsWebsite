@@ -23,8 +23,10 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
         {
             return false;
         }
+
         return true;
     }
+
     [HttpGet]
     [Authorize(Roles = "TeamLeader,Admin,Developer")]
     public async Task<IActionResult> GetAll()
@@ -47,6 +49,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
 
         return Ok(cardModel.ToCardDto());
     }
+
     [HttpGet("Developer/{devId:int}")]
     public async Task<IActionResult> GetDeveloperCards([FromRoute] int devId)
     {
@@ -54,6 +57,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
         var cardsDto = cards.Select(c => c.ToCardDto());
         return Ok(cardsDto);
     }
+
     [HttpPost("{projectId:int}")]
     [Authorize(Roles = "TeamLeader,Admin")]
     public async Task<IActionResult> Create([FromRoute] int projectId, [FromBody] CreateCardDto cardDto)
@@ -88,9 +92,10 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateCardDto cardDto)
     {
-        var user = unitOfWork.UserRepository.Getbyusername(User.GetUsername());
+        var user = await unitOfWork.UserRepository.Getbyusername(User.GetUsername());
         var cardModel = await unitOfWork.CardRepository.GetByIdAsync(id);
 
+                                   
         if (cardModel == null)
         {
             return NotFound();
@@ -103,8 +108,9 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
 
         cardModel.Title = cardDto.Title;
         cardModel.Description = cardDto.Description;
-
+        cardModel.Status = (Status)cardDto.Status;
         unitOfWork.CardRepository.UpdateAsync(cardModel);
+
         await unitOfWork.CompleteAsync();
 
         return Ok(cardModel);
@@ -126,10 +132,12 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
             {
                 return NotFound();
             }
+
             if (!IsUserAllowedToEditCard(cardModel))
             {
-                return Forbid() ;
+                return Forbid();
             }
+
             if (patchDoc.Operations[0].path == "/AssignedDeveloperId")
             {
                 if (cardModel.AssignedDeveloperId != null)
