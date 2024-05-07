@@ -38,9 +38,9 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
 
     [HttpGet("Card/{cardId:int}")]
     [Authorize(Roles = "TeamLeader,Admin")]
-    public async Task<IActionResult> GetById([FromRoute] int id)
+    public async Task<IActionResult> GetById([FromRoute] int cardId)
     {
-        var cardModel = await unitOfWork.CardRepository.GetByIdAsync(id);
+        var cardModel = await unitOfWork.CardRepository.GetByIdAsync(cardId);
 
         if (cardModel == null)
         {
@@ -68,7 +68,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
         return Ok();
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     [Authorize(Roles = "TeamLeader,Admin")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete([FromRoute] int id)
