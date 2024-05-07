@@ -23,7 +23,7 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [Authorize]
+    [Authorize(Roles = "TeamLeader,Admin")]
     public async Task<IActionResult> GetAll()
     {
         var user = User;
@@ -35,6 +35,7 @@ public class ProjectController(
     }
     [HttpGet("{projectId:int}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(Roles = "TeamLeader,Admin")]
     public async Task<IActionResult> Get([FromRoute] int projectId)
     {
         var project = await _unitOfWork.ProjectRepository.GetByIdAsync(projectId);
