@@ -99,5 +99,23 @@ public class UserController(ITokenService tokenService, IUnitOfWork unitOfWork) 
         var orderedNotifications = notifications.OrderBy(n => n.NotificationDate);
         return Ok(orderedNotifications);
     }
+
+    [HttpDelete("Reject")]
+    [Authorize(Roles = "Developer,Admin")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Reject()
+    {
+        var user  = await _unitOfWork.UserRepository.Getbyusername(User.GetUsername());
+        if (user != null)
+        {
+            var projectDev = await _unitOfWork.ProjectDeveloperRepository.GetByDevIdAsync(user.Id);
+            if (projectDev == null || projectDev is { IsTeamLeader: true })
+                return NotFound("maybe your invitation expired");
+            _unitOfWork.ProjectDeveloperRepository.DeleteAsync(projectDev);
+            await _unitOfWork.CompleteAsync();
+            return Ok("Rejected the invitation successfully successfully");
+        }
+        return NotFound("maybe your invitation expired");  
+    }
     
 }
