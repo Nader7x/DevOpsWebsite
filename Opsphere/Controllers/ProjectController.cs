@@ -33,6 +33,14 @@ public class ProjectController(
         return Ok(projectsDto);
 
     }
+    [HttpGet("{projectId:int}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Get([FromRoute] int projectId)
+    {
+        var project = await _unitOfWork.ProjectRepository.GetByIdAsync(projectId);
+        if (project != null) return Ok(project.PrjectToProjectDto());
+        return NotFound();
+    }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
