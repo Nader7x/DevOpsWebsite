@@ -12,8 +12,8 @@ using Opsphere.Data;
 namespace Opsphere.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240504154522_FileUrl")]
-    partial class FileUrl
+    [Migration("20240507214615_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

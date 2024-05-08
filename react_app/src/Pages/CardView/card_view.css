@@ -1,0 +1,151 @@
+/* Reset default margin and padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Style for header */
+header {
+    background-color: #066da0;
+    padding: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 999;
+    box-shadow: 0 2px 4px rgba(235, 231, 231, 0.804);
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+}
+
+.header-title {
+    margin-right: 20px;
+    color: white;
+    font-size: 1.5em;
+}
+
+.header-buttons {
+    display: flex;
+}
+
+/* Add white spacing between header and rest of the page */
+body {
+    margin-top: 60px;
+    background-image: url('https://www.freepik.com/free-photos-vectors/website-background');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+/* Style for buttons */
+.header-btn,
+.sidebar-btn {
+    padding: 5px 12px;
+    border: 2mm ridge rgba(255, 255, 255, 0.815);
+    border-radius: 4px;
+    cursor: pointer;
+    color: rgb(56, 3, 3);
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.header-btn:hover,
+.sidebar-btn:hover {
+    background-color: #066da0;
+}
+
+/* Style for search bar */
+.search-bar {
+    padding: 8px;
+    border-radius: 5px;
+    border: none;
+}
+
+/* Style for line */
+.line {
+    position: fixed;
+    height: 100%;
+    width: 5px;
+    background-color: #ff0000;
+    left: 25%;
+    top: 0;
+}
+
+/* Style for card container */
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 5px;
+    width: 80%;
+    margin-left: 20%;
+    margin-top: 5%;
+    /* Change Card-container background*/
+    background: linear-gradient(to bottom right, #000000, #ff0000);
+    color: rgb(0, 0, 0);
+}
+
+/* Style for individual card */
+.card {
+    width: calc(20% - 30px);
+    background-color: #fff !important;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(140, 136, 136, 0.879) ;
+    margin: 20px;
+    padding: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.card:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Style for card title */
+.card h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+/* Style for card content */
+.card p {
+    font-size: 1em;
+    line-height: 1.5;
+}
+
+/* Style for button container */
+.button-container {
+    position: fixed;
+    left: 0;
+    height: calc(100% - 50px);
+    width: 20%;
+    background-color: #000000;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Style for buttons */
+.sidebar-btn {
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    border: 2px solid red;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #000000;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar-btn:hover {
+    background-color: #430f0f;
+}
