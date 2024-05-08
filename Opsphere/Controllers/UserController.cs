@@ -9,6 +9,7 @@ namespace Opsphere.Controllers;
 [ProducesResponseType(StatusCodes.Status200OK)]  
 [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 [ProducesResponseType(StatusCodes.Status400BadRequest)]
+[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 [ApiController]
 [Route("Opsphere/User")]
 public class UserController(ITokenService tokenService, IUnitOfWork unitOfWork) : ControllerBase
