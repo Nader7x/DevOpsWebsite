@@ -5,13 +5,23 @@ namespace Opsphere.Mappers;
 
 public static class ProjectMapper
 {
-     public static ProjectDto PrjectToProjectDto(this Project project)
+     public static projectDtoWithdevs ProjectToProjectDtoWithdevs(this Project project)
+     {
+         return new projectDtoWithdevs()
+         {
+             Id = project.Id,
+             Name = project.Name,
+             Description = project.Description,
+             ProjectDevelopers = project.ProjectDevelopers.ToList()
+         };
+     }
+     public static ProjectDto ProjectToProjectDto(this Project project)
      {
          return new ProjectDto
          {
              Id = project.Id,
              Name = project.Name,
-             Description = project.Description
+             Description = project.Description,
          };
      }
      public static Project CreateProjectDtoToProject(this CreateProjectDto createProjectDto)

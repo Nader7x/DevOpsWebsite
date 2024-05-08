@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Opsphere.Data.Interfaces;
@@ -29,22 +30,28 @@ public class ProjectController(
         var user = User;
         if (!user.IsInRole("TeamLeader") && !user.IsInRole("Admin")) return Forbid();
         var projects = await _unitOfWork.ProjectRepository.GetAllAsync();
-        var projectsDto = projects.Select(p => p.PrjectToProjectDto());
+        var projectsDto = projects.Select(p => p.ProjectToProjectDto());
         return Ok(projectsDto);
 
     }
     [HttpGet("{projectId:int}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [Authorize(Roles = "TeamLeader,Admin")]
     public async Task<IActionResult> Get([FromRoute] int projectId)
     {
-        var project = await _unitOfWork.ProjectRepository.GetByIdAsync(projectId);
-        if (project != null) return Ok(project.PrjectToProjectDto());
+        var projectq = await _unitOfWork.ProjectRepository.ProjectWithDevelopersAsync(projectId);
+        if (projectq != null)
+        {
+            var project = projectq.FirstOrDefault();
+            return Ok(project.ProjectToProjectDtoWithdevs());
+        }
         return NotFound();
     }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [Authorize(Roles = "TeamLeader,Admin")]
     public async Task<IActionResult> Create([FromBody] CreateProjectDto projectDto)
     {
@@ -69,6 +76,7 @@ public class ProjectController(
 
     [HttpPut("{id:int}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [Authorize(Roles = "TeamLeader,Admin")]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateProjectDto projectDto)
     {
@@ -96,6 +104,7 @@ public class ProjectController(
     [HttpDelete("{id:int}")]
     [Authorize(Roles = "TeamLeader,Admin")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
         var project = await _unitOfWork.ProjectRepository.GetByIdAsync(id);
@@ -112,8 +121,10 @@ public class ProjectController(
     [HttpPost("{projectId:int}/developer/{developerId:int}")]
     [Authorize(Roles = "TeamLeader,Admin")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> AddDeveloper([FromRoute] int projectId, [FromRoute] int developerId)
     {
+        var user = await _unitOfWork.UserRepository.Getbyusername(User.GetUsername());
         var projectDevDto = new AddDevDto()
         {
             ProjectId = projectId,
@@ -143,8 +154,9 @@ public class ProjectController(
             return BadRequest("Maybe the developer is already in the project or doesn't exit");
         }
 
-        // User(User.GetUsername() ?? string.Empty)
-        await _hubContext.Clients.All.SendNotification(notification.Content);
+        await _hubContext.Clients.User(developerId.ToString()).SendNotification(notification.Content);
+        await _hubContext.Clients.User(user.Username).SendNotification(notification.Content);
+        await _hubContext.Clients.User(user.Email).SendNotification(notification.Content);
         return Ok();
     }
 }

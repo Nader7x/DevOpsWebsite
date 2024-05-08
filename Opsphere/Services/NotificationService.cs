@@ -9,20 +9,21 @@ namespace Opsphere.Services;
 public class NotificationService(IUnitOfWork unitOfWork)  : Hub<INotificationService>
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    public override async Task OnConnectedAsync()
+    public async Task SendNotificationToUser(string userId, string notification)
     {
-        await Clients.Client(Context.ConnectionId).SendNotification("Kosom el net bta3y we el frontend");
+        // Implement your logic to send notification to specific user
+        await Clients.User(userId).SendNotification(notification);
     }
 
-    // public async Task SendNotificationToUser(string userId, string notification)
-    // {
-    //     // var user = await _unitOfWork.UserRepository.GetByIdAsync(int.Parse(userId));
-    //     // if (Context.User != null)
-    //     //     if (Context.User.GetUsername() == user?.Username)
-    //     //     {
-    //             // await Clients.User(userId).SendNotification(userId, notification);
-    //             await Clients.All.SendNotification(userId, notification);
-    //         // }
-    // }
+    public async Task SendNotificationToAll(string notification)
+    {
+        // Implement your logic to send notification to all connected clients
+        await Clients.All.SendNotification(notification);
+    }
 
+    public override async Task OnConnectedAsync()
+    {
+        await Clients.Client(Context.ConnectionId).SendNotification("Welcome to Opsphere Platform");
+        await base.OnConnectedAsync();
+    }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Opsphere.Data.Interfaces;
 
@@ -10,4 +11,5 @@ public interface IBaseRepository <T> where T : class
     EntityEntry<T> UpdateAsync(T entity);
     EntityEntry<T> DeleteAsync(T entity);
     Task<T?> FindAsync(T entity);
+    Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> predicate);
 }

@@ -11,4 +11,9 @@ public class ProjectRepository(ApplicationDbContext dbContext) : BaseRepository<
     public async Task<string?> GetProjectNameByIdAsync(int projectId){
         return await _dbContext.Projects.Where(p => p.Id == projectId).Select(p => p.Name).FirstOrDefaultAsync();
     }
+
+    public async Task<IQueryable<Project>> ProjectWithDevelopersAsync(int projectId)
+    {
+        return _dbContext.Projects.Include(x =>x.ProjectDevelopers).ThenInclude(x => x.User).Where(x => x.Id == projectId);
+    }
 }

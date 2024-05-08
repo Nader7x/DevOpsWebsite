@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Opsphere.Data.Interfaces;
 using Opsphere.Data.Models;
@@ -12,10 +13,11 @@ namespace Opsphere.Controllers;
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 [ApiController]
 [Route("Opsphere/User")]
-public class UserController(ITokenService tokenService, IUnitOfWork unitOfWork) : ControllerBase
+public class UserController(ITokenService tokenService, IUnitOfWork unitOfWork , IMapper mapper) : ControllerBase
 {
     private readonly ITokenService _tokenService = tokenService;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IMapper _mapper = mapper;
 
     [HttpPost("Register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
@@ -71,7 +73,7 @@ public class UserController(ITokenService tokenService, IUnitOfWork unitOfWork) 
     }
 
     [HttpGet("GetCurrentUserName")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public Task<IActionResult> GetUserName()
     {
         return Task.FromResult<IActionResult>(Ok(User.GetUsername()));
@@ -99,6 +101,13 @@ public class UserController(ITokenService tokenService, IUnitOfWork unitOfWork) 
         var notifications = await _unitOfWork.NotificationRepository.UserNotificationsById(userid);
         var orderedNotifications = notifications.OrderBy(n => n.NotificationDate);
         return Ok(orderedNotifications);
+    }
+    [HttpGet("/Developers")]
+    public async Task<IActionResult> GetAllDevelopers()
+    {
+        var devs = await _unitOfWork.UserRepository.GetAllAsync(c => c.Role == UserRoles.Developer);
+        var devsDtos = _mapper.Map<DevDto>(devs);
+        return Ok(devsDtos);
     }
 
     [HttpDelete("Reject")]

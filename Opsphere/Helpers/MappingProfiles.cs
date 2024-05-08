@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Opsphere.Data.Models;
 using Opsphere.Dtos.CardCommnets;
+using Opsphere.Dtos.User;
 
 namespace Opsphere.Helpers;
 
@@ -10,5 +11,6 @@ public class MappingProfiles : Profile
      {
           CreateMap<AddCommentDto, CardComment>();
           CreateMap<CardComment, CardCommentDto>();
+          CreateMap<User, DevDto>();
      }
 }

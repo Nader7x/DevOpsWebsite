@@ -38,6 +38,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
 
     [HttpGet("Card/{cardId:int}")]
     [Authorize(Roles = "TeamLeader,Admin")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetById([FromRoute] int cardId)
     {
         var cardModel = await unitOfWork.CardRepository.GetByIdAsync(cardId);
@@ -51,6 +52,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
     }
 
     [HttpGet("Developer/{devId:int}")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetDeveloperCards([FromRoute] int devId)
     {
         var cards = await unitOfWork.CardRepository.GetDeveloperCardsAsync(devId);
@@ -60,6 +62,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
 
     [HttpPost("{projectId:int}")]
     [Authorize(Roles = "TeamLeader,Admin")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Create([FromRoute] int projectId, [FromBody] CreateCardDto cardDto)
     {
         var cardModel = cardDto.ToCardFromCreate(projectId);
@@ -71,6 +74,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
     [HttpDelete("{id:int}")]
     [Authorize(Roles = "TeamLeader,Admin")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
         var cardModel = await unitOfWork.CardRepository.GetByIdAsync(id);
