@@ -1,0 +1,140 @@
+/* Reset default margin and padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Style for header */
+header {
+    background-color: #066da0;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 999;
+    box-shadow: 0 2px 4px rgba(235, 231, 231, 0.804);
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+}
+
+.header-title {
+    margin-right: 20px;
+    color: white;
+    font-size: 1.5em;
+}
+
+.header-buttons {
+    display: flex;
+}
+
+/* Add white spacing between header and rest of the page */
+body {
+    margin-top: 60px;
+    background-image: url('https://www.freepik.com/free-photos-vectors/website-background');
+    background-size: cover;
+    background-repeat: no-repeat;
+    font-family: Arial, sans-serif;
+}
+
+/* Style for buttons */
+.header-btn,
+.sidebar-btn {
+    padding: 5px 12px;
+    border: 2mm ridge rgba(255, 255, 255, 0.815);
+    border-radius: 4px;
+    cursor: pointer;
+    color: rgb(56, 3, 3);
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.header-btn:hover,
+.sidebar-btn:hover {
+    background-color: #066da0;
+}
+
+/* Style for search bar */
+.search-bar {
+    padding: 8px;
+    border-radius: 5px;
+    border: none;
+}
+
+
+/* Style for Project container */
+.project-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 5px;
+    width: 100%;
+    margin-left: 0%;
+    margin-top: 5.25%;
+    /* Change Project-container background*/
+    background: lightskyblue;
+    color: rgb(0, 0, 0);
+}
+
+.project {
+    width: 100%;
+    background: linear-gradient(to bottom right,#000428 , #004e92);
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+
+}
+
+.project .details {
+    display: none;
+}
+
+.project.active .details {
+    display: block;
+}
+
+.details {
+    padding: 10px;
+    background-color: #fff;
+}
+
+.button {
+    padding: 5px 10px;
+    margin-right: 5px;
+    margin-top: 10px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    width: 100%;
+}
+
+
+.button.update {
+    background-color:blue ;
+    transition: background-color 0.3s ease;
+}
+
+.button.delete:hover {
+    background-color: #007bff;
+}
+
+.button.delete {
+    background-color: #dc3545;
+    transition: background-color 0.3s ease;
+}
+
+.button.delete:hover {
+    background-color: #c82333;
+}
+
+.title {
+    color: aliceblue;
+}
