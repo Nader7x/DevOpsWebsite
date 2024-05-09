@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Opsphere.Data.Interfaces;
 using Opsphere.Data.Models;
 using Opsphere.Dtos.Project;
@@ -32,20 +33,27 @@ public class ProjectController(
         var projects = await _unitOfWork.ProjectRepository.GetAllAsync();
         var projectsDto = projects.Select(p => p.ProjectToProjectDto());
         return Ok(projectsDto);
-
     }
+
     [HttpGet("{projectId:int}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [Authorize(Roles = "TeamLeader,Admin")]
     public async Task<IActionResult> Get([FromRoute] int projectId)
     {
-        var projectq = await _unitOfWork.ProjectRepository.ProjectWithDevelopersAsync(projectId);
-        if (projectq != null)
+        var projectQuery = await _unitOfWork.ProjectRepository.ProjectWithDevelopersAsync(projectId);
+        var project = projectQuery.FirstOrDefault();
+        if (project != null)
         {
-            var project = projectq.FirstOrDefault();
-            return Ok(project.ProjectToProjectDtoWithdevs());
+            if (project.ProjectDevelopers != null)
+            {
+                project.ProjectDevelopers =
+                    project.ProjectDevelopers.Where(pd => pd.IsMemeber == true && pd.IsTeamLeader == false).ToList();
+                if (project.ProjectDevelopers.Any())
+                    return Ok(project.ProjectToProjectDtoWithdevs());
+            }
         }
+
         return NotFound();
     }
 
@@ -158,5 +166,13 @@ public class ProjectController(
         await _hubContext.Clients.User(user.Username).SendNotification(notification.Content);
         await _hubContext.Clients.User(user.Email).SendNotification(notification.Content);
         return Ok();
+    }
+
+    [HttpGet("ProjectDevelopers/{id:int}")]
+    public async Task<IActionResult> GetProjectDevs([FromRoute]int id)
+    {
+        var projectDevs = await _unitOfWork.ProjectDeveloperRepository.GetProjectDevs(id);
+        projectDevs = projectDevs.Where(pd => pd.IsTeamLeader == false && pd.IsMemeber == true);
+        return Ok(projectDevs.Select(pd => pd.Projectdevtodto()));
     }
 }

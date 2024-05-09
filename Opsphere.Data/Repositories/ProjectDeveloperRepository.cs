@@ -10,8 +10,17 @@ public class ProjectDeveloperRepository(ApplicationDbContext dbContext) : BaseRe
 
     public async Task<ProjectDeveloper?> GetByDevIdAsync(int devId)
     {
-        return await _dbContext.ProjectDevelopers.Where(pd => pd.UserId == devId).FirstOrDefaultAsync();
+        return await _dbContext.ProjectDevelopers.Include(pd=>pd.User).Where(pd => pd.UserId == devId).FirstOrDefaultAsync();
     }
+
+    public async Task<IEnumerable<ProjectDeveloper>?> GetProjectDevs(int projectId)
+    {
+        return await _dbContext.ProjectDevelopers
+            .Include(pd => pd.User)
+            .Where(pd => pd.ProjectId == projectId).ToListAsync();
+
+    }
+
 
 
 }

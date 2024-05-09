@@ -12,5 +12,5 @@ public class Project
     [StringLength(500)]
     public string? Description { get; set; }
     public ICollection<Card>? Cards { get; set; }
-    public ICollection<ProjectDeveloper> ProjectDevelopers { get; set; }
+    public ICollection<ProjectDeveloper>? ProjectDevelopers { get; set; }
 }
