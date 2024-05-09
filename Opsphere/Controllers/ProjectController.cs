@@ -44,6 +44,7 @@ public class ProjectController(
     {
         var projectQuery = await _unitOfWork.ProjectRepository.ProjectWithDevelopersAsync(projectId);
         var project = projectQuery.FirstOrDefault();
+        Console.WriteLine(project);
         if (project != null)
         {
             if (project.ProjectDevelopers != null)
@@ -53,6 +54,8 @@ public class ProjectController(
                 if (project.ProjectDevelopers.Any())
                     return Ok(project.ProjectToProjectDtoWithdevs());
             }
+
+            return Ok(project.ProjectToProjectDto());
         }
 
         return NotFound();
