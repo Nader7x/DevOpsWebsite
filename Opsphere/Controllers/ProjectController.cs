@@ -16,7 +16,8 @@ namespace Opsphere.Controllers;
  ProducesResponseType(StatusCodes.Status500InternalServerError), ApiController, Route("Opsphere/project")]
 public class ProjectController(
     IUnitOfWork unitOfWork,
-    IHubContext<NotificationService, INotificationService> hubContext) : ControllerBase
+    IHubContext<NotificationService, INotificationService> hubContext
+    ) : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IHubContext<NotificationService, INotificationService> _hubContext = hubContext;
@@ -132,7 +133,6 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> AddDeveloper([FromRoute] int projectId, [FromRoute] int developerId)
     {
-        var user = await _unitOfWork.UserRepository.Getbyusername(User.GetUsername());
         var projectDevDto = new AddDevDto()
         {
             ProjectId = projectId,
@@ -161,10 +161,7 @@ public class ProjectController(
             Console.WriteLine(e.Message);
             return BadRequest("Maybe the developer is already in the project or doesn't exit");
         }
-
-        await _hubContext.Clients.User(developerId.ToString()).SendNotification(notification.Content);
-        await _hubContext.Clients.User(user.Username).SendNotification(notification.Content);
-        await _hubContext.Clients.User(user.Email).SendNotification(notification.Content);
+        await _hubContext.Clients.All.SendNotification(notification);
         return Ok();
     }
 

@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Opsphere.Data.Models;
 
@@ -15,6 +17,7 @@ public class Notification
     [Key]
     public int Id { get; set; }
     [Required]
+    [JsonConverter(typeof(StringEnumConverter))]
     public  NotificationType Type { get; set; }
     [Required]
     [MaxLength(250)]

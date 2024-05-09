@@ -10,7 +10,7 @@ import {
     MDBInput
 }
     from 'mdb-react-ui-kit';
-import jwt from 'jwt-decode';
+import * as jwt from "jwt-decode";
 import {useNavigate} from "react-router-dom";
 import {useRef, useState} from "react";
 import axios from "axios";
@@ -40,7 +40,7 @@ export const LoginPage = () => {
             })
             .then((data) => {
                 setLogin({ ...login, loading: false });
-                const user = jwt(data.data.token);
+                const user = jwt.jwtDecode(data.data.token);
                 setAuthToken(data.data.token);
                 console.log(user.role);
                 navigate("/ProjectView");
@@ -119,7 +119,7 @@ export const LoginPage = () => {
 
                                     <MDBBtn className="mb-4 px-5" color='dark' size='lg'>Login</MDBBtn>
                                     <a className="small text-muted" href="#!">Forgot password?</a>
-                                    <p className="mb-5 pb-lg-2" style={{color: '#393f81'}}>Don't have an account? <a href="#!" style={{color: '#393f81'}}>Register here</a></p>
+                                    <p className="mb-5 pb-lg-2" style={{color: '#393f81'}}>Don't have an account? <a href="http://localhost:3000/register" style={{color: '#393f81'}}>Register here</a></p>
 
                                     <div className='d-flex flex-row justify-content-start'>
                                         <a href="#!" className="small text-muted me-1">Terms of use.</a>

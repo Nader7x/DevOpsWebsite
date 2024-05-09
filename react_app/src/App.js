@@ -5,6 +5,7 @@ import {Card} from "./Pages/CardView/Card/card";
 import {CardView} from "./Pages/CardView/card_view";
 import {Header} from "./Shared/Header/header";
 import {Outlet} from "react-router-dom";
+import Notification from "./Pages/Notification";
 
 const App = () => {
     return(
@@ -12,7 +13,10 @@ const App = () => {
         // <RegisterPage/>
         // <CardView/>
         // <Header/>
-        <Outlet/>
+        <div>
+            <Notification/>
+            <Outlet/>
+        </div>
     );
 }
 
