@@ -37,10 +37,23 @@ public class ProjectController(
     }
 
     [HttpGet("{projectId:int}")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Authorize(Roles = "TeamLeader,Admin")]
+    public async Task<IActionResult> Get([FromRoute] int projectId)
+    {
+        var project = await _unitOfWork.ProjectRepository.GetByIdAsync(projectId);
+        if (project == null)
+        {
+            return NotFound();
+        }
+        return Ok(project.ProjectToProjectDto());
+    }
+    [HttpGet("WithDevsAndCards/{projectId:int}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [Authorize(Roles = "TeamLeader,Admin")]
-    public async Task<IActionResult> Get([FromRoute] int projectId)
+    public async Task<IActionResult> GetProjectWithDevsAndCards([FromRoute] int projectId)
     {
         var projectQuery = await _unitOfWork.ProjectRepository.ProjectWithDevelopersAsync(projectId);
         var project = projectQuery.FirstOrDefault();
