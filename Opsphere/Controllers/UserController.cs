@@ -106,7 +106,7 @@ public class UserController(ITokenService tokenService, IUnitOfWork unitOfWork ,
     public async Task<IActionResult> GetAllDevelopers()
     {
         var devs = await _unitOfWork.UserRepository.GetAllAsync(c => c.Role == UserRoles.Developer);
-        var devsDtos = _mapper.Map<DevDto>(devs);
+        var devsDtos = _mapper.Map<List<DevDto>>(devs);
         return Ok(devsDtos);
     }
 
