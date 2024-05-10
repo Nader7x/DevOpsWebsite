@@ -17,6 +17,7 @@ public class ProjectDeveloperRepository(ApplicationDbContext dbContext) : BaseRe
     {
         return await _dbContext.ProjectDevelopers
             .Include(pd => pd.User)
+            .Include(ac => ac.AssignedCards)
             .Where(pd => pd.ProjectId == projectId).ToListAsync();
 
     }
