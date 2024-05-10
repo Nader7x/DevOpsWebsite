@@ -20,7 +20,8 @@ namespace Opsphere.Data.Migrations
                     Type = table.Column<int>(type: "int", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    NotificationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    NotificationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

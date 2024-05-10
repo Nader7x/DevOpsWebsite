@@ -12,7 +12,7 @@ using Opsphere.Data;
 namespace Opsphere.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240507214615_Initial")]
+    [Migration("20240510004431_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -129,6 +129,9 @@ namespace Opsphere.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("NotificationDate")
                         .HasColumnType("datetime2");

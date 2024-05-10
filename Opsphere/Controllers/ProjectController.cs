@@ -16,8 +16,7 @@ namespace Opsphere.Controllers;
  ProducesResponseType(StatusCodes.Status500InternalServerError), ApiController, Route("Opsphere/project")]
 public class ProjectController(
     IUnitOfWork unitOfWork,
-    IHubContext<NotificationService, INotificationService> hubContext
-    ) : ControllerBase
+    IHubContext<NotificationService, INotificationService> hubContext) : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IHubContext<NotificationService, INotificationService> _hubContext = hubContext;
@@ -47,8 +46,10 @@ public class ProjectController(
         {
             return NotFound();
         }
+
         return Ok(project.ProjectToProjectDto());
     }
+
     [HttpGet("WithDevsAndCards/{projectId:int}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -177,12 +178,13 @@ public class ProjectController(
             Console.WriteLine(e.Message);
             return BadRequest("Maybe the developer is already in the project or doesn't exit");
         }
+
         await _hubContext.Clients.All.SendNotification(notification);
         return Ok();
     }
 
     [HttpGet("ProjectDevelopers/{id:int}")]
-    public async Task<IActionResult> GetProjectDevs([FromRoute]int id)
+    public async Task<IActionResult> GetProjectDevs([FromRoute] int id)
     {
         var projectDevs = await _unitOfWork.ProjectDeveloperRepository.GetProjectDevs(id);
         projectDevs = projectDevs.Where(pd => pd.IsTeamLeader == false && pd.IsMemeber == true);

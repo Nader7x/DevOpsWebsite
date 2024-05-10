@@ -127,6 +127,9 @@ namespace Opsphere.Data.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("NotificationDate")
                         .HasColumnType("datetime2");
 
