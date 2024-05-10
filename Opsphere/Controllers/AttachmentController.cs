@@ -15,10 +15,10 @@ public class AttachmentController(IUnitOfWork unitOfWork, IWebHostEnvironment en
     private readonly IWebHostEnvironment _env = env;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById([FromRoute] int id)
+    [HttpGet("AttachementsInfo/{attachmentId:int}")]
+    public async Task<IActionResult> GetById([FromRoute] int attachmentId)
     {
-        var attachmentModel = await _unitOfWork.AttachmentRepository.GetByIdAsync(id);
+        var attachmentModel = await _unitOfWork.AttachmentRepository.GetByIdAsync(attachmentId);
 
         if (attachmentModel == null)
         {
@@ -70,7 +70,7 @@ public class AttachmentController(IUnitOfWork unitOfWork, IWebHostEnvironment en
         if (attachment == null || string.IsNullOrEmpty(attachment.FilePath)) return BadRequest("No Attachment Found");
         if (!System.IO.File.Exists(attachment.FilePath)) return BadRequest("No Attachment Found");
         var contentType = GetContentType(Path.GetExtension(attachment.FilePath));
-        return PhysicalFile(attachment.FilePath, contentType);
+        return PhysicalFile(attachment.FilePath, contentType,attachment.FileUrl);
     }
 
     private static string GetContentType(string fileExtension)
