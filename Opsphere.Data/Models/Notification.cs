@@ -25,5 +25,5 @@ public class Notification
     public int UserId { get; set; }
 
     public DateTime NotificationDate { get; set; } = DateTime.UtcNow;
-    private bool IsRead { get; set; } = false;
+    public bool IsRead { get; set; } = false;
 }
