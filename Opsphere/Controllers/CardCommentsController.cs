@@ -32,12 +32,6 @@ public class CardCommentsController(IUnitOfWork unitOfWork, IMapper mapper) : Co
             {
                 var dto = _mapper.Map<CardCommentDto>(c);
                 dto.UserName = c?.User?.Username;
-                dto.Replies = dto.Replies?.Select(r => new Reply
-                {
-                    ReplyContent = r.ReplyContent,
-                    User = r?.User?.UserToUserNameAndEmail(),
-                }).ToList();
-                
                 return dto;
             }).ToList();
            

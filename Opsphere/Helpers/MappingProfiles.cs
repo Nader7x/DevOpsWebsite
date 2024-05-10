@@ -14,5 +14,16 @@ public class MappingProfiles : Profile
           CreateMap<CardComment, CardCommentDto>();
           CreateMap<User, DevDto>();
           CreateMap<AddReplyDto, Reply>();
+          
+          CreateMap<Reply, GetReplyDto>();
+          
+          CreateMap<User, ReplyUserDto>();
+          
+          CreateMap<AddCommentDto, CardComment>();
+          
+          CreateMap<CardComment, CardCommentDto>()
+               .ForMember(dest => dest.Replies, opt => opt.MapFrom(src => src.Replies));
+          
+          CreateMap<AddReplyDto, Reply>();
      }
 }
