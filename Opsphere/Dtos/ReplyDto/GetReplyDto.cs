@@ -6,5 +6,5 @@ public class GetReplyDto
 {
     public string? ReplyContent { get; set; }
 
-    public Data.Models.User? User { get; set; }
+    public ReplyUserDto? User { get; set; }
 }

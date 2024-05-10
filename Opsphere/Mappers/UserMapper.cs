@@ -24,4 +24,14 @@ public static class UserMapper
             Role = user.Role
         };
     }
+
+    public static ReplyUserDto ToReplyUserDtoFromUser(this User user)
+    {
+        return new ReplyUserDto
+        {
+            Username = user.Username,
+            Email = user.Email,
+            Role = user.Role
+        };
+    }
 }
