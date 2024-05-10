@@ -16,11 +16,12 @@ namespace Opsphere.Controllers;
  ProducesResponseType(StatusCodes.Status500InternalServerError), ApiController, Route("Opsphere/project")]
 public class ProjectController(
     IUnitOfWork unitOfWork,
-    IHubContext<NotificationService, INotificationService> hubContext
-    ) : ControllerBase
+    IHubContext<NotificationService, INotificationService> hubContext,
+    NotificationService notificationService) : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IHubContext<NotificationService, INotificationService> _hubContext = hubContext;
+    private readonly NotificationService _notificationService = notificationService;
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -47,8 +48,10 @@ public class ProjectController(
         {
             return NotFound();
         }
+
         return Ok(project.ProjectToProjectDto());
     }
+
     [HttpGet("WithDevsAndCards/{projectId:int}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -74,6 +77,16 @@ public class ProjectController(
         return NotFound();
     }
 
+    [HttpGet("ProjectsOfTeamLeader/{teamleaderId}")]
+    [Authorize(Roles = "TeamLeader,Admin")]
+    public async Task<IActionResult> GetProjectsOfTeamLeader([FromRoute] int teamleaderId)
+    {
+        var projects = await unitOfWork.ProjectRepository.GetProjectsOfTeamLeader(teamleaderId);
+        var projectsDto = projects?.Select(proj => proj.ProjectToProjectDto());
+        return Ok(projectsDto);
+    }
+    
+
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -82,6 +95,7 @@ public class ProjectController(
     {
         var project = projectDto.CreateProjectDtoToProject();
         var teamLeader = await _unitOfWork.UserRepository.Getbyusername(User.GetUsername());
+        project.CreatorId = teamLeader.Id;
         await _unitOfWork.ProjectRepository.AddAsync(project);
         try
         {
@@ -177,12 +191,20 @@ public class ProjectController(
             Console.WriteLine(e.Message);
             return BadRequest("Maybe the developer is already in the project or doesn't exit");
         }
-        await _hubContext.Clients.All.SendNotification(notification);
+
+        foreach (var userConnection in _notificationService.userConnections)
+        {
+            if (userConnection.Value==developerId.ToString())
+            {
+                await _hubContext.Clients.Client(userConnection.Key).SendNotification(notification);
+            }
+        }
+        await _hubContext.Clients.Client(_notificationService.userConnections.FirstOrDefault(c=>c.Key==developerId.ToString()).Value).SendNotification(notification);
         return Ok();
     }
 
     [HttpGet("ProjectDevelopers/{id:int}")]
-    public async Task<IActionResult> GetProjectDevs([FromRoute]int id)
+    public async Task<IActionResult> GetProjectDevs([FromRoute] int id)
     {
         var projectDevs = await _unitOfWork.ProjectDeveloperRepository.GetProjectDevs(id);
         projectDevs = projectDevs.Where(pd => pd.IsTeamLeader == false && pd.IsMemeber == true);

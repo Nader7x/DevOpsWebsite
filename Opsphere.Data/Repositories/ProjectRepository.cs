@@ -23,4 +23,10 @@ public class ProjectRepository(ApplicationDbContext dbContext) : BaseRepository<
             .Where(p => p.Id == projectId);
     }
 
+    public async Task<List<Project>?> GetProjectsOfTeamLeader(int teamleaderId)
+    {
+        var projects = await _dbContext.Projects.Where(proj => proj.CreatorId == teamleaderId).ToListAsync();
+        
+        return projects;
+    }
 }

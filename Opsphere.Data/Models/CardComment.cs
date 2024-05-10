@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +17,8 @@ public class CardComment
     [Required]                  
     [StringLength(500)]             
     public string? CommentContent { get; set; }
+    
+    public ICollection<Reply> Replies { get; set; }
     public Card? Card { get; set; }
     public User? User { get; set; }
 }

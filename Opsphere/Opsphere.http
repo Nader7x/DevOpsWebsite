@@ -1,6 +1,6 @@
-@Opsphere_HostAddress = http://localhost:5227
+@Opsphere_HostAddress = https://localhost:5157
 
-GET {{Opsphere_HostAddress}}/weatherforecast/
+GET {{Opsphere_HostAddress}}/Opsphere/project/
 Accept: application/json
 
 ###

@@ -13,4 +13,9 @@ public class CardRepository(ApplicationDbContext dbContext) : BaseRepository<Car
     {
         return await _dbContext.Cards.Where(c => c.AssignedDeveloperId == devId).ToListAsync();
     }
+
+    public async Task<List<Card>?> GetProjectCardsAsync(int projectId)
+    {
+        return await _dbContext.Cards.Where(c => c.ProjectId == projectId).ToListAsync();
+    }
 }
