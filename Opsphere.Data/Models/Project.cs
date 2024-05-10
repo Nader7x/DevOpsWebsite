@@ -7,6 +7,8 @@ public class Project
 {
     [Key]
     public int Id { get; set; }
+
+    public int CreatorId { get; set; }
     [Required]
     public string? Name { get; set; }
     [StringLength(500)]

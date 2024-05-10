@@ -77,6 +77,16 @@ public class ProjectController(
         return NotFound();
     }
 
+    [HttpGet("ProjectsOfTeamLeader/{teamleaderId}")]
+    [Authorize(Roles = "TeamLeader,Admin")]
+    public async Task<IActionResult> GetProjectsOfTeamLeader([FromRoute] int teamleaderId)
+    {
+        var projects = await unitOfWork.ProjectRepository.GetProjectsOfTeamLeader(teamleaderId);
+        var projectsDto = projects?.Select(proj => proj.ProjectToProjectDto());
+        return Ok(projectsDto);
+    }
+    
+
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -85,6 +95,7 @@ public class ProjectController(
     {
         var project = projectDto.CreateProjectDtoToProject();
         var teamLeader = await _unitOfWork.UserRepository.Getbyusername(User.GetUsername());
+        project.CreatorId = teamLeader.Id;
         await _unitOfWork.ProjectRepository.AddAsync(project);
         try
         {

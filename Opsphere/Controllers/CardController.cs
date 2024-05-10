@@ -38,6 +38,16 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
         return Ok(cardsDto);
     }
 
+    [HttpGet("Cards/{projectId:int}")]
+    [Authorize(Roles = "TeamLeader,Admin")]
+    public async Task<IActionResult> GetCardsOfProject([FromRoute] int projectId)
+    {
+        var cards = await unitOfWork.CardRepository.GetProjectCardsAsync(projectId);
+        var cardsDto = cards?.Select(c => c.ToCardDto());
+
+        return Ok(cardsDto);
+    }
+
     [HttpGet("Card/{cardId:int}")]
     [Authorize(Roles = "TeamLeader,Admin")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
