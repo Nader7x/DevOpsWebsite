@@ -16,27 +16,22 @@ public class NotificationService : Hub<INotificationService>
 
     public override Task OnConnectedAsync()
     {
-        userConnections.Add(Context.ConnectionId,Context.User.GetNameId());
-        Console.WriteLine("Key Count"+userConnections.Keys.Count);
-        var id = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
-        Console.WriteLine(id);
-        foreach (var keyval in userConnections)
+        if (Context.User.Identity.IsAuthenticated)
         {
-            if (keyval.Value == id)
+            userConnections.Add(Context.ConnectionId,Context.User.GetNameId());
+            var id = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            foreach (var keyval in userConnections)
             {
-                Clients.Client(keyval.Key).SendNotification(new Notification()
+                if (keyval.Value == id)
                 {
-                    UserId = 1,
-                    Content = $"Welcome Again bro {Context.User.GetUsername()}"
-                }); 
+                    Clients.Client(keyval.Key).SendNotification(new Notification()
+                    {
+                        UserId = int.Parse(Context.User.GetNameId()),
+                        Content = $"Welcome Again bro {Context.User.GetUsername()}"
+                    }); 
+                }
             }
-    
         }
-
-        // Console.WriteLine(Context.User.GetNameId());
-        // Console.WriteLine(Context.User.GetUsername());
-        // Console.WriteLine(Context.User.GetEmail());
-        // Console.WriteLine(Context.User.GetRole());
         return base.OnConnectedAsync();
     }
 }

@@ -18,10 +18,9 @@ namespace Opsphere.Controllers;
  ProducesResponseType(StatusCodes.Status500InternalServerError), ApiController]
 public class CardController(IUnitOfWork unitOfWork) : ControllerBase
 {
-
-    private bool IsUserAllowedToEditCard(Card card)
+    private async Task<bool> IsUserAllowedToEditCard(Card card)
     {
-        var user = unitOfWork.UserRepository.Getbyusername(User.GetUsername());
+        var user = await unitOfWork.UserRepository.Getbyusername(User.GetUsername());
         if (User.IsInRole("Developer") && card.AssignedDeveloperId != user.Id)
         {
             return false;
@@ -102,7 +101,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
         var user = await unitOfWork.UserRepository.Getbyusername(User.GetUsername());
         var cardModel = await unitOfWork.CardRepository.GetByIdAsync(id);
 
-                                   
+
         if (cardModel == null)
         {
             return NotFound();
@@ -123,7 +122,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
         return Ok(cardModel);
     }
 
-    [HttpPatch("{id}")]
+    [HttpPatch("{id:int}")]
     [Authorize(Roles = "TeamLeader,Admin,Developer")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -140,7 +139,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
                 return NotFound();
             }
 
-            if (!IsUserAllowedToEditCard(cardModel))
+            if (IsUserAllowedToEditCard(cardModel).Result== false)
             {
                 return Forbid();
             }
