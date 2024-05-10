@@ -1,4 +1,4 @@
-import jwt from "jwt-decode";
+import * as jwt from "jwt-decode";
 
 export const setAuthToken = (token) => {
     localStorage.setItem("token", token);
@@ -6,7 +6,7 @@ export const setAuthToken = (token) => {
 
 export const getAuthToken = () => {
     if (localStorage.getItem("token")) {
-        const user = jwt(localStorage.getItem("token"));
+        const user = jwt.jwtDecode(localStorage.getItem("token"));
         if (Date.now() >= user.exp * 1000) {
             // remove token
             removeAuthToken();
