@@ -105,7 +105,8 @@ public class UserController(ITokenService tokenService, IUnitOfWork unitOfWork ,
     {
         var notifications = await _unitOfWork.NotificationRepository.UserNotificationsById(userid);
         var orderedNotifications = notifications.OrderBy(n => n.NotificationDate);
-        return Ok(orderedNotifications);
+        var filteredNotifications = orderedNotifications.Where(notification => notification.IsRead == false);
+        return Ok(filteredNotifications);
     }
     [HttpGet("/Developers")]
     public async Task<IActionResult> GetAllDevelopers()
