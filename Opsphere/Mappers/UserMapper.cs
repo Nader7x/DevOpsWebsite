@@ -14,4 +14,14 @@ public static class UserMapper
             Email = user.Email
         };
     }
+
+    public static User UserToUserNameAndEmail(this User user)
+    {
+        return new User
+        {
+            Username = user.Username,
+            Email = user.Email,
+            Role = user.Role
+        };
+    }
 }

@@ -28,6 +28,12 @@ public class ApplicationDbContext : DbContext
             .OnDelete(deleteBehavior: DeleteBehavior.Cascade)
             .HasForeignKey(cm => cm.CardId);
 
+        modelBuilder.Entity<Reply>()
+            .HasOne(r => r.CardComment)
+            .WithMany(cc => cc.Replies)
+            .OnDelete(deleteBehavior: DeleteBehavior.Cascade)
+            .HasForeignKey(r => r.CardCommentId);
+
         modelBuilder.Entity<Attachment>()
             .HasOne(a => a.Card)
             .WithOne(c => c.Attachment)

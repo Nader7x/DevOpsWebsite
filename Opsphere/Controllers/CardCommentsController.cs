@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Opsphere.Data.Interfaces;
 using Opsphere.Data.Models;
 using Opsphere.Dtos.CardCommnets;
+using Opsphere.Dtos.ReplyDto;
 using Opsphere.Helpers;
+using Opsphere.Mappers;
 
 namespace Opsphere.Controllers;
 
@@ -26,8 +28,19 @@ public class CardCommentsController(IUnitOfWork unitOfWork, IMapper mapper) : Co
         var comments = await _unitOfWork.CardCommentRepository.GetCardCommentsAsync(cardId);
         if (comments != null)
         {
-            var commentsDto = comments.Select(c => _mapper.Map<CardCommentDto>(c)).ToList();
-            commentsDto.ForEach(c => c.UserName = userName);
+            var commentsDto = comments.Select(c =>
+            {
+                var dto = _mapper.Map<CardCommentDto>(c);
+                dto.UserName = c?.User?.Username;
+                dto.Replies = dto.Replies?.Select(r => new Reply
+                {
+                    ReplyContent = r.ReplyContent,
+                    User = r?.User?.UserToUserNameAndEmail(),
+                }).ToList();
+                
+                return dto;
+            }).ToList();
+           
             return Ok(commentsDto);
         }
 

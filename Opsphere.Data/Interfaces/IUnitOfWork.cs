@@ -9,5 +9,7 @@ public interface IUnitOfWork : IDisposable
     IAttachmentRepository AttachmentRepository { get; }
     ICardCommentRepository CardCommentRepository { get; }
     INotificationRepository NotificationRepository { get; }
+    
+    IReplyRepository ReplyRepository { get; }
     Task<int> CompleteAsync();
 }
