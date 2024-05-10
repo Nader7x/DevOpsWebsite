@@ -56,12 +56,12 @@ builder.Services.AddSwaggerGen(option =>
 builder.Services.AddDbContext<ApplicationDbContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
-builder.Services.AddSignalR();
 builder.Services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddAutoMapper(typeof(MappingProfiles));
 IFileProvider physicalProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
 builder.Services.AddSingleton<IFileProvider>(physicalProvider);
+builder.Services.AddSingleton<NotificationService>();
 
 
 builder.Services.AddCors(options =>
@@ -78,12 +78,12 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = 
-        options.DefaultChallengeScheme = 
-            options.DefaultForbidScheme =       
-                options.DefaultScheme = 
-                    options.DefaultSignInScheme = 
-                        options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters()
@@ -96,23 +96,30 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(
             System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"] ))
     };
-    options.Events = new JwtBearerEvents()
+    options.Events = new JwtBearerEvents
     {
-      OnMessageReceived = context =>
-      {
-          var accessToken = context.Request.Query["access_token"];
-          var path = context.HttpContext.Request.Path;
-          if (string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/Notify"))
-          {
-             context.Token = accessToken; 
-          }
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
 
-          return Task.CompletedTask;
-      }
+            // If the request is for our hub...
+            var path = context.HttpContext.Request.Path;
+            Console.WriteLine(path.Value);
+            Console.WriteLine(accessToken);
+            if (!string.IsNullOrEmpty(accessToken) &&
+                (path.StartsWithSegments("/Notify")))
+            {
+                // Read the token out of the query string
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
     };
     options.IncludeErrorDetails = true;
     options.SaveToken = true;
 });
+builder.Services.AddSignalR();
+
 
 var app = builder.Build();
 var env = app.Environment;

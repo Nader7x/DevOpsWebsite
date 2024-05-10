@@ -16,10 +16,12 @@ namespace Opsphere.Controllers;
  ProducesResponseType(StatusCodes.Status500InternalServerError), ApiController, Route("Opsphere/project")]
 public class ProjectController(
     IUnitOfWork unitOfWork,
-    IHubContext<NotificationService, INotificationService> hubContext) : ControllerBase
+    IHubContext<NotificationService, INotificationService> hubContext,
+    NotificationService notificationService) : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IHubContext<NotificationService, INotificationService> _hubContext = hubContext;
+    private readonly NotificationService _notificationService = notificationService;
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -179,7 +181,14 @@ public class ProjectController(
             return BadRequest("Maybe the developer is already in the project or doesn't exit");
         }
 
-        await _hubContext.Clients.All.SendNotification(notification);
+        foreach (var userConnection in _notificationService.userConnections)
+        {
+            if (userConnection.Value==developerId.ToString())
+            {
+                await _hubContext.Clients.Client(userConnection.Key).SendNotification(notification);
+            }
+        }
+        await _hubContext.Clients.Client(_notificationService.userConnections.FirstOrDefault(c=>c.Key==developerId.ToString()).Value).SendNotification(notification);
         return Ok();
     }
 
