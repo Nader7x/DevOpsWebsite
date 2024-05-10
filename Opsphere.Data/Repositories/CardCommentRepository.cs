@@ -9,6 +9,7 @@ public class CardCommentRepository(ApplicationDbContext dbContext) : BaseReposit
   private readonly ApplicationDbContext _dbContext = dbContext;
   public async Task<List<CardComment>?> GetCardCommentsAsync(int cardId)
   {
-       return await _dbContext.CardComments.Where(c => c.CardId == cardId).ToListAsync();
+      
+       return await _dbContext.CardComments.Include(cc => cc.Replies).ThenInclude(r => r.User).Include(cc => cc.User).Where(c => c.CardId == cardId).ToListAsync();
   } 
 }
