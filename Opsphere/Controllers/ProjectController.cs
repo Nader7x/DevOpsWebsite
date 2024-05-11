@@ -1,8 +1,7 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Opsphere.Data.Interfaces;
 using Opsphere.Data.Models;
 using Opsphere.Dtos.Project;
@@ -31,7 +30,7 @@ public class ProjectController(
     public async Task<IActionResult> GetAll()
     {
         var user = User;
-        if (!user.IsInRole("TeamLeader") && !user.IsInRole("Admin")) return Forbid();
+        if (user.IsInRole("Developer")) return Forbid();
         var projects = await _unitOfWork.ProjectRepository.GetAllAsync();
         var projectsDto = projects.Select(p => p.ProjectToProjectDto());
         return Ok(projectsDto);
@@ -58,9 +57,7 @@ public class ProjectController(
     [Authorize(Roles = "TeamLeader,Admin")]
     public async Task<IActionResult> GetProjectWithDevsAndCards([FromRoute] int projectId)
     {
-        var projectQuery = await _unitOfWork.ProjectRepository.ProjectWithDevelopersAsync(projectId);
-        var project = projectQuery.FirstOrDefault();
-        Console.WriteLine(project);
+        var project = await _unitOfWork.ProjectRepository.ProjectWithDevelopersAsync(projectId);
         if (project != null)
         {
             if (project.ProjectDevelopers != null)
@@ -81,11 +78,11 @@ public class ProjectController(
     [Authorize(Roles = "TeamLeader,Admin")]
     public async Task<IActionResult> GetProjectsOfTeamLeader([FromRoute] int teamleaderId)
     {
-        var projects = await unitOfWork.ProjectRepository.GetProjectsOfTeamLeader(teamleaderId);
+        var projects = await _unitOfWork.ProjectRepository.GetProjectsOfTeamLeader(teamleaderId);
         var projectsDto = projects?.Select(proj => proj.ProjectToProjectDto());
         return Ok(projectsDto);
     }
-    
+
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -94,15 +91,21 @@ public class ProjectController(
     public async Task<IActionResult> Create([FromBody] CreateProjectDto projectDto)
     {
         var project = projectDto.CreateProjectDtoToProject();
-        var teamLeader = await _unitOfWork.UserRepository.Getbyusername(User.GetUsername());
-        project.CreatorId = teamLeader.Id;
+        if (User.GetNameId().IsNullOrEmpty())
+        {
+            return NotFound();
+        }
+
+        project.CreatorId = int.Parse(User.GetNameId() ?? string.Empty);
         await _unitOfWork.ProjectRepository.AddAsync(project);
         try
         {
             await _unitOfWork.CompleteAsync();
-            if (teamLeader != null)
-                await _unitOfWork.ProjectDeveloperRepository.AddAsync(new ProjectDeveloper()
-                    { ProjectId = project.Id, UserId = teamLeader.Id, IsTeamLeader = true, IsMemeber = true });
+            await _unitOfWork.ProjectDeveloperRepository.AddAsync(new ProjectDeveloper()
+            {
+                ProjectId = project.Id, UserId = int.Parse(User.GetNameId() ?? string.Empty), IsTeamLeader = true,
+                IsMemeber = true
+            });
             await _unitOfWork.CompleteAsync();
         }
         catch (Exception e)
@@ -163,12 +166,12 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> AddDeveloper([FromRoute] int projectId, [FromRoute] int developerId)
     {
-        var projectDevDto = new AddDevDto()
+        var projectDev = new ProjectDeveloper()
         {
             ProjectId = projectId,
             UserId = developerId,
             IsTeamLeader = false,
-            isMember = false
+            IsMemeber = false
         };
         var projectName = await _unitOfWork.ProjectRepository.GetProjectNameByIdAsync(projectId);
 
@@ -176,10 +179,9 @@ public class ProjectController(
         {
             Type = NotificationType.ProjectInvite,
             Content = $"You have been invited to join project {projectName} as a developer.",
-            UserId = developerId,
+            UserId = developerId
         };
-        var projectDeveloper = projectDevDto.AddDeveloperToProject();
-        await _unitOfWork.ProjectDeveloperRepository.AddAsync(projectDeveloper);
+        await _unitOfWork.ProjectDeveloperRepository.AddAsync(projectDev);
         try
         {
             await _unitOfWork.CompleteAsync();
@@ -192,14 +194,15 @@ public class ProjectController(
             return BadRequest("Maybe the developer is already in the project or doesn't exit");
         }
 
-        foreach (var userConnection in _notificationService.userConnections)
+        if (_notificationService.userConnections.Count != 0)
         {
-            if (userConnection.Value==developerId.ToString())
+            foreach (var userConnection in _notificationService.userConnections.Where(userConnection =>
+                         userConnection.Value == developerId.ToString()))
             {
                 await _hubContext.Clients.Client(userConnection.Key).SendNotification(notification);
             }
         }
-        await _hubContext.Clients.Client(_notificationService.userConnections.FirstOrDefault(c=>c.Key==developerId.ToString()).Value).SendNotification(notification);
+
         return Ok();
     }
 

@@ -18,15 +18,9 @@ namespace Opsphere.Controllers;
  ProducesResponseType(StatusCodes.Status500InternalServerError), ApiController]
 public class CardController(IUnitOfWork unitOfWork) : ControllerBase
 {
-    private async Task<bool> IsUserAllowedToEditCard(Card card)
+    private  bool IsUserAllowedToEditCard(Card card)
     {
-        var user = await unitOfWork.UserRepository.Getbyusername(User.GetUsername());
-        if (User.IsInRole("Developer") && card.AssignedDeveloperId != user.Id)
-        {
-            return false;
-        }
-
-        return true;
+        return !User.IsInRole("Developer") || card.AssignedDeveloperId == int.Parse(User.GetNameId() ?? string.Empty);
     }
 
     [HttpGet]
@@ -39,7 +33,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
     }
 
     [HttpGet("Cards/{projectId:int}")]
-    [Authorize(Roles = "TeamLeader,Admin")]
+    [Authorize(Roles = "TeamLeader,Admin,Developer")]
     public async Task<IActionResult> GetCardsOfProject([FromRoute] int projectId)
     {
         var cards = await unitOfWork.CardRepository.GetProjectCardsAsync(projectId);
@@ -49,7 +43,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
     }
 
     [HttpGet("Card/{cardId:int}")]
-    [Authorize(Roles = "TeamLeader,Admin")]
+    [Authorize(Roles = "TeamLeader,Admin,Developer")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetById([FromRoute] int cardId)
     {
@@ -108,7 +102,6 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateCardDto cardDto)
     {
-        var user = await unitOfWork.UserRepository.Getbyusername(User.GetUsername());
         var cardModel = await unitOfWork.CardRepository.GetByIdAsync(id);
 
 
@@ -117,7 +110,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
             return NotFound();
         }
 
-        if (User.IsInRole("Developer") && cardModel.AssignedDeveloperId != user.Id)
+        if (User.IsInRole("Developer") && cardModel.AssignedDeveloperId != int.Parse(User.GetNameId() ?? string.Empty))
         {
             return Forbid();
         }
@@ -149,7 +142,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
                 return NotFound();
             }
 
-            if (IsUserAllowedToEditCard(cardModel).Result== false)
+            if (IsUserAllowedToEditCard(cardModel) == false)
             {
                 return Forbid();
             }
