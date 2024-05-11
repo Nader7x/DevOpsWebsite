@@ -49,7 +49,7 @@ public class CardController(IUnitOfWork unitOfWork) : ControllerBase
     }
 
     [HttpGet("Card/{cardId:int}")]
-    [Authorize(Roles = "TeamLeader,Admin")]
+    [Authorize(Roles = "TeamLeader,Admin,Developer")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetById([FromRoute] int cardId)
     {
