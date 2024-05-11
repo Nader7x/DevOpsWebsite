@@ -19,20 +19,19 @@ export const UpdateProject = () => {
 
     useEffect(() => {
         axios
-            .get(`https://localhost:7157/Opsphere/project`, {
+            .get(`https://localhost:7157/Opsphere/project/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             })
             .then((response) => {
                 setSpecificProject({ ...specificProject, result: response.data, loading: false, err: null });
-                console.log(response.data);
             })
             .catch((errors) => {
                 setSpecificProject({
                     ...specificProject,
                     result: {
-                        id: "",
+                        id: id,
                         name: "",
                         description: "",
                     },
@@ -43,7 +42,23 @@ export const UpdateProject = () => {
     }, []);
     const handleSubmit = (e) => {
         e.preventDefault();
+        setSpecificProject({ ...specificProject, loading: true });
 
+        axios.put(`https://localhost:7157/Opsphere/project/${specificProject.result.id}`, {
+            name: form.current.name.value,
+            description: form.current.description.value,
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        })
+            .then(() => {
+                setSpecificProject({ ...specificProject, loading: false });
+                navigate("/ProjectView");
+            })
+            .catch((errors) => {
+                setSpecificProject({ ...specificProject, loading: false, err: [{ msg: `something went wrong` }] });
+            });
     };
     const form = useRef({
         name: "",
@@ -52,18 +67,18 @@ export const UpdateProject = () => {
     return (
         <>
 
-            <Header />
+            <Header pagename={"Update Project Page"} type={"project"}/>
             <div className="project-container">
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
                         <label htmlFor="nameInput" className="form-label">name</label>
-                        <input type="text" className="form-control" id="nameInput" placeholder={id} ref={(val) => {
+                        <input type="text" className="form-control" id="nameInput" placeholder={specificProject.result.name} ref={(val) => {
                             form.current.name = val;
                         }} />
                     </div>
                     <div className="mb-3">
                         <label htmlFor="descriptionInput" className="form-label">Description</label>
-                        <textarea className="form-control" id="description" rows="5" placeholder="Enter description"
+                        <textarea className="form-control" id="description" rows="5" placeholder={specificProject.result.description}
                                   ref={(val) => {
                                       form.current.description = val;
                                   }}></textarea></div>

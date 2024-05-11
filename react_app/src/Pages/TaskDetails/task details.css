@@ -1,0 +1,131 @@
+.card-container2 {
+    display: flex;
+    overflow: auto;
+    flex-wrap: wrap;
+    position: fixed;
+    width: 80%;
+    height: 100%;
+    margin-top: 55px;
+    padding-top: 8%;
+    margin-left: 20%;
+    background: linear-gradient(to bottom right, #000000, #ff0000);
+    color: rgb(0, 0, 0);
+    overflow: auto;
+}
+
+.cardbk-container{
+    overflow-wrap: break-word;
+    height:fit-content ;
+    border-radius: 5px;
+    font-size: 16px;
+    border: 2px solid rgb(0, 0, 0);
+    border-radius: 10px;
+    background-color: rgba(240, 248, 255, 0.442);
+    font-weight: bold;
+    margin-top: 5%;
+    margin-left: 5%;
+    margin-right: 5%;
+    width: 90%;
+    margin-bottom: 10%;
+    margin-top: -8%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: left;
+}
+
+.cardtitle-container{
+    padding: 5px;
+    width: 80%;
+    height:20% ;
+    margin-top: 20px;
+    margin-left: 10%;
+    margin-right: 10%;
+    border-radius: 10px;
+}
+
+.title2{
+    padding: 10px 20px;
+    border: 2px solid red;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #1f1f1f;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+.title2:hover {
+    background-color: #430f0f;
+}
+
+.cardDev-container{
+    padding-left: 5px;
+    padding-top: 5px;
+    width: 80%;
+    height:20%;
+    margin-left: 2%;
+    margin-right: 2%;
+    border-radius: 10px;
+}
+
+.assignedDevelopers{
+    float: left;
+    margin-bottom: 3%;
+}
+
+.cardStatus-container2{
+    padding: 5px;
+    height:fit-content ;
+    width: fit-content;
+    border-radius: 10px;
+    float: left;
+}
+
+.addAttachment{
+    width: fit-content;
+    margin-left: 2.5%;
+}
+
+.cardDescription-container{
+    padding-left: 5px;
+    padding-bottom: 5px;
+    width: fit-content;
+    height:fit-content ;
+    margin-left: 2%;
+}
+
+.cardComment-container{
+    width: 100%;
+    height:fit-content ;
+    margin-bottom: 2%;
+    border-radius: 10px;
+    margin-top: 2%;
+}
+
+.addComment{
+    width: 95%;
+}
+
+.comments{
+    margin-top: 1%;
+    margin-right: 2%;
+    margin-left: 2%;
+    padding-left: 3%;
+    padding-right: 3%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    border-radius: 5px;
+    font-size: 16px;
+    border: 2px solid rgb(0, 0, 0);
+    border-radius: 10px;
+    background-color: rgba(240, 248, 255, 0.442);
+    font-weight: bold;
+}
+
+#back{
+    position: fixed;
+    align-self: flex-end;
+    bottom: 0;
+}

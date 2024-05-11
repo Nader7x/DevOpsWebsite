@@ -2,12 +2,14 @@ import "./add_project.css"
 import {Header} from "../../Shared/Header/header";
 import React, {useRef, useState} from "react";
 import {getAuthToken} from "../../Services/auth";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import axios from "axios";
 
 export const AddProject = () =>{
     const { token, user } = getAuthToken();
     const navigate = useNavigate();
+    const location = useLocation();
+
 
     const [project, setProject] = useState({
         loading: true,
@@ -42,7 +44,7 @@ export const AddProject = () =>{
     };
     return (
         <>
-            <Header />
+            <Header pagename={"Add Project Page"} currentPage={location.pathname} type={"project"}/>
             <div className="project-container">
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">

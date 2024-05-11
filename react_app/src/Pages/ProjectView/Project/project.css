@@ -1,0 +1,63 @@
+.project {
+    width: 100%;
+    background: linear-gradient(to bottom right,#000428 , #004e92);
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+
+}
+.project-info{
+    align-items: center;
+    margin-top: 1%;
+}
+
+.project .details {
+    display: none;
+}
+
+.project.active .details {
+    display: block;
+}
+
+.details {
+    padding: 10px;
+    background-color: #fff;
+}
+
+.button-project {
+    padding: 5px 10px;
+    margin-right: 5px;
+    margin-top: 10px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    width: 100%;
+}
+
+.developers{
+    float: right;
+}
+
+.button-project.update {
+    background-color:blue ;
+    transition: background-color 0.3s ease;
+}
+
+.button-project.delete:hover {
+    background-color: #007bff;
+}
+
+.button-project.delete {
+    background-color: #dc3545;
+    transition: background-color 0.3s ease;
+}
+
+.button-project.delete:hover {
+    background-color: #c82333;
+}
+
+.title {
+    color: aliceblue;
+}

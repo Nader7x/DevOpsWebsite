@@ -1,4 +1,4 @@
-import {useNavigate, useParams} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {getAuthToken} from "../../Services/auth";
 import "./add_task.css"
 import {Header} from "../../Shared/Header/header";
@@ -6,7 +6,6 @@ import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 
 export const AddTask = () => {
-    const { id } = useParams();
     const { token, user } = getAuthToken();
     const navigate = useNavigate();
 
@@ -26,7 +25,7 @@ export const AddTask = () => {
         title: "",
         description: "",
         comment: "",
-        project: "", // Store the selected project id
+        project: "",
     });
 
     useEffect(() => {
@@ -38,7 +37,6 @@ export const AddTask = () => {
             })
             .then((response) => {
                 setSpecificProject({ ...specificProject, result: response.data, loading: false, err: null });
-                console.log(response.data);
             })
             .catch((errors) => {
                 setSpecificProject({
@@ -58,7 +56,7 @@ export const AddTask = () => {
         e.preventDefault();
         setTask({ ...task, loading: true });
 
-        const projectId = form.current.project; // Get selected project id
+        const projectId = form.current.project;
 
         axios.post(`https://localhost:7157/Opsphere/card/${projectId}`, {
             title: form.current.title.value,
@@ -71,10 +69,9 @@ export const AddTask = () => {
         })
             .then(() => {
                 setTask({ ...task, loading: false });
-                navigate("/CardView");
+                navigate(`/CardView/${projectId}`);
             })
             .catch((errors) => {
-                console.log(user.role)
                 setTask({ ...task, loading: false, err: [{ msg: `something went wrong` }] });
             });
     };
@@ -114,14 +111,15 @@ export const AddTask = () => {
                 loadingSpinner()
             ) : (
                 <body>
-                <Header/>
+                <Header pagename={"Add Card"}/>
+
                 <div className="button-container">
-                    <button className="sidebar-btn">AhmedMamo711</button>
-                    <button className="sidebar-btn">Developer</button>
-                    <button className="sidebar-btn">ID: 711</button>
+                    <button className="sidebar-btn">{user.given_name}</button>
+                    <button className="sidebar-btn">{user.role}</button>
                 </div>
                 <div className="card-container">
                     <div className="form-container">
+
                         <form className="task-form" onSubmit={handleSubmit}>
                             <div className="mb-3">
                                 <label htmlFor="taskTitle" className="form-label">Task Title</label>
@@ -151,10 +149,11 @@ export const AddTask = () => {
                                 </select>
                             </div>
                             <button type="submit" className="btn btn-primary">Add Task</button>
-                            <button type="button" className="btn btn-secondary">Cancel</button>
+                            <button type="button" className="btn btn-secondary" onClick={() => navigate(-1)}>Cancel</button>
                         </form>
                     </div>
                 </div>
+
                 </body>
             )}
         </>

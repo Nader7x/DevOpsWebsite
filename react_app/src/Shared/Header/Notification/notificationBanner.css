@@ -1,0 +1,140 @@
+/* Notification button styles */
+.button {
+    width: 200px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 0px 15px;
+    background-color: rgb(66, 66, 66);
+    border-radius: 10px;
+    color: white;
+    border: none;
+    position: relative;
+    cursor: pointer;
+    transition-duration: 0.2s;
+}
+.dot {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translate(-50%, -50%);
+    width: 15px;
+    height: 15px;
+    background-color: rgb(194, 3, 3);
+    border-radius: 100%;
+}
+.bell {
+    width: 13px;
+}
+.bell path {
+    fill: rgb(0, 206, 62);
+}
+.arrow {
+    position: absolute;
+    right: 0;
+    width: 30px;
+    height: 100%;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.button:hover {
+    background-color: rgb(77, 77, 77);
+    transition-duration: 0.2s;
+}
+.button:hover .arrow {
+    animation: slide-right 1s infinite;
+}
+/* arrow animation */
+@keyframes slide-right {
+    0% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(-5px);
+    }
+}
+.button:active {
+    transform: translate(1px, 1px);
+    transition-duration: 0.2s;
+}
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #ffffffc1;
+    min-width: 200px;
+    z-index: 1;
+    border-radius: 10px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    display: block;
+    text-decoration: none;
+}
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+/* Style for Accept and Reject checkboxes */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+}
+.checkbox-container input[type="checkbox"] {
+    margin-right: 5px;
+}
+.checkbox-container label {
+    margin-right: 10px;
+}
+/* Style for Accept label */
+.notification label[for^="accept"]::before {
+    content: "\2713"; /* Unicode character for checkmark */
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    margin-right: 5px;
+    border: 2px solid #066da0;
+    border-radius: 4px;
+    color: #066da0;
+}
+/* Style for Reject label */
+.notification label[for^="reject"]::before {
+    content: "X"; /* Custom content for reject */
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    margin-right: 5px;
+    border: 2px solid #066da0;
+    border-radius: 4px;
+    color: #066da0;
+}
+/* Style for Accept checkbox when checked */
+input[type="checkbox"]:checked + label[for^="accept"]::before {
+    background-color: #4caf50; /* Green color for checked checkbox */
+    color: white;
+}
+/* Style for Reject checkbox when checked */
+input[type="checkbox"]:checked + label[for^="reject"]::before {
+    background-color: #f44336; /* Red color for checked checkbox */
+    color: white;
+}
+/* Hide the default checkboxes */
+input[type="checkbox"] {
+    display: none;
+}
+

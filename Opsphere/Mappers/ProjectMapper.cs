@@ -55,21 +55,21 @@ public static class ProjectMapper
          {
              return new ProjectDeveloperDto()
              {
-                 User = projectDeveloper.User.usertodev(),
+                 User = projectDeveloper?.User?.usertodev(),
              };  
          }
 
          return new ProjectDeveloperDto()
          {
-             User = projectDeveloper.User.usertodev(),
-             AssignedCards = projectDeveloper.AssignedCards.Select(c => c.ToCardDto())
+             User = projectDeveloper?.User?.usertodev(),
+             AssignedCards = projectDeveloper?.AssignedCards.Select(c => c.ToCardDto())
          };
      }
      public static CardDevDto TocardDevDto(this ProjectDeveloper projectDeveloper)
      {
          return new CardDevDto()
          {
-             User = projectDeveloper.User.usertodev(),
+             User = projectDeveloper?.User?.usertodev(),
          };
      }
 }

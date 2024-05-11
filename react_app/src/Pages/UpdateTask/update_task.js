@@ -12,7 +12,7 @@ export const UpdateTask = () => {
 
     const [task, setTask] = useState({
         loading: true,
-        result: {},
+        result: [],
         err: null,
     });
 
@@ -24,49 +24,26 @@ export const UpdateTask = () => {
 
     const [specificProject, setSpecificProject] = useState({
         loading: true,
-        result: {},
+        result: [],
         err: null,
-    });
+    });;
 
     const form = useRef({
         title: "",
         description: "",
         comment: "",
-        project: "", // Store the selected project id
+        project: "",
     });
 
     useEffect(() => {
         axios
-            .get(`https://localhost:7157/Opsphere/project`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
-            .then((response) => {
-                setSpecificProject({ ...specificProject, result: response.data, loading: false, err: null });
-                console.log(response.data);
-            })
-            .catch((errors) => {
-                setSpecificProject({
-                    ...specificProject,
-                    result: {
-                        id: "",
-                        name: "",
-                        description: ""
-                    },
-                    loading: false,
-                    err: [{ msg: `something went wrong` }],
-                });
-            });
-        axios
-            .get(`https://localhost:7157/Opsphere/card/${id}`, { //endpoint not working
+            .get(`https://localhost:7157/Opsphere/card/Card/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             })
             .then((response) => {
                 setSpecificCard({ ...specificCard, result: response.data, loading: false, err: null });
-                console.log(response.data);
             })
             .catch((errors) => {
                 setSpecificCard({
@@ -85,30 +62,26 @@ export const UpdateTask = () => {
                     err: [{ msg: `something went wrong` }],
                 });
             });
-    }, []);
+    }, [specificCard.result.projectId]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setTask({ ...task, loading: true });
 
-        const projectId = form.current.project; // Get selected project id
 
-        axios.put(`https://localhost:7157/Opsphere/card/${projectId}`, {
+        axios.put(`https://localhost:7157/Opsphere/card/${id}`, {
             title: form.current.title.value,
             description: form.current.description.value,
-            comment: form.current.comment.value,
         }, {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
         })
             .then(() => {
-                alert("success");
                 setTask({ ...task, loading: false });
-                navigate("/CardView");
+                navigate(`/CardView/${specificCard.result.projectId}`);
             })
             .catch((errors) => {
-                console.log(user.role)
                 setTask({ ...task, loading: false, err: [{ msg: `something went wrong` }] });
             });
     };
@@ -143,49 +116,34 @@ export const UpdateTask = () => {
 
     return (
         <>
-            {specificProject.err !== null && error()}
-            {specificProject.loading === true ? (
+            {specificCard.err !== null && error()}
+            {specificCard.loading === true ? (
                 loadingSpinner()
             ) : (
                 <body>
-                <Header/>
+                <Header pagename={"Update Task"}/>
                 <div className="button-container">
-                    <button className="sidebar-btn">AhmedMamo711</button>
-                    <button className="sidebar-btn">Developer</button>
-                    <button className="sidebar-btn">ID: 711</button>
+                    <button className="sidebar-btn">{user.given_name}</button>
+                    <button className="sidebar-btn">{user.role}</button>
                 </div>
                 <div className="card-container">
                     <div className="form-container">
                         <form className="task-form" onSubmit={handleSubmit}>
                             <div className="mb-3">
                                 <label htmlFor="taskTitle" className="form-label">Task Title</label>
-                                <input type="text" className="form-control" id="taskTitle" placeholder= {specificCard.result.title} ref={(val) => {
+                                <input type="text" className="form-control" id="taskTitle" defaultValue= {specificCard.result.title} ref={(val) => {
                                     form.current.title = val;
                                 }}/>
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="description" className="form-label">Description</label>
-                                <textarea className="form-control" id="description" rows="5" placeholder={specificCard.result.description} ref={(val) => {
+                                <textarea className="form-control" id="description" rows="5" defaultValue={specificCard.result.description} ref={(val) => {
                                     form.current.description = val;
                                 }}></textarea>
                             </div>
-                            <div className="mb-3">
-                                <label htmlFor="comment" className="form-label">Comment</label>
-                                <textarea className="form-control" id="comment" rows="3" placeholder= {specificCard.result.comment} ref={(val) => {
-                                    form.current.comment = val;
-                                }}></textarea>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="project" className="form-label">Project</label>
-                                <select className="form-select" id="project" onChange={(e) => form.current.project = e.target.value}>
-                                    <option>Select project</option>
-                                    {Array.isArray(specificProject.result) && specificProject.result.map(project => (
-                                        <option key={project.id} value={project.id}>{project.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <button type="submit" className="btn btn-primary">Add Task</button>
-                            <button type="button" className="btn btn-secondary">Cancel</button>
+
+                            <button type="submit" className="btn btn-primary">Update Task</button>
+                            <button type="button" className="btn btn-secondary" onClick={() => navigate(`/CardView/${specificCard.result.projectId}`)}>Cancel</button>
                         </form>
                     </div>
                 </div>

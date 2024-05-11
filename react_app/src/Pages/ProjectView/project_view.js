@@ -2,21 +2,21 @@ import React, {useEffect, useState} from 'react';
 import "./project_view.css"
 import {Header} from "../../Shared/Header/header";
 import {Project} from "./Project/project";
-import {useLocation, useNavigate} from "react-router-dom";
+import {useLocation} from "react-router-dom";
 import {getAuthToken} from "../../Services/auth";
 import axios from "axios";
 export const ProjectView = () => {
 
-    const navigate = useNavigate();
     const { token, user } = getAuthToken();
-    const [username, setUsername] = useState('');
     const location = useLocation();
 
     const [specificProject, setSpecificProject] = useState({
         loading: true,
-        result: {},
+        result: [],
         err: null,
     });
+
+
 
     useEffect(() => {
         axios
@@ -27,7 +27,6 @@ export const ProjectView = () => {
             })
             .then((response) => {
                 setSpecificProject({ ...specificProject, result: response.data, loading: false, err: null });
-                console.log(response.data);
             })
             .catch((errors) => {
                 setSpecificProject({
@@ -41,19 +40,7 @@ export const ProjectView = () => {
                     err: [{ msg: `something went wrong` }],
                 });
             });
-        axios
-            .get(`https://localhost:7157/Opsphere/User/GetCurrentUserName`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
-            .then((response) => {
-                setUsername(response.data);
-            })
-            .catch((error) => {
-                console.error('Error fetching username:', error);
-                setUsername('Unknown');
-            });
+
     }, []);
 
     const loadingSpinner = () => {
@@ -85,7 +72,6 @@ export const ProjectView = () => {
     };
 
     const refreshProjectList = () => {
-        // Function to refresh the card list after deletion
         axios
             .get(`https://localhost:7157/Opsphere/project`, {
                 headers: {
@@ -109,22 +95,25 @@ export const ProjectView = () => {
                 });
             });
     };
+
     return (
         <>
             {specificProject.err !== null && error()}
             {specificProject.loading === true ? (
                 loadingSpinner()
             ) : (
-                <body>
-                <Header currentPage={location.pathname}/>
-                <div className="project-container">
-                    {specificProject.result.map((project, index) => (
-                        <Project key={index} title={project.name} description={project.description} id={project.id} refreshProjectList={refreshProjectList}/>
-                    ))}
+                <>
+                    <Header pagename={"Project View Page"} currentPage={location.pathname} type={"project"}/>
+                    <body>
+                    <div className="project-container">
+                        {specificProject.result.map((project, index) => (
+                            <Project key={index} title={project.name} description={project.description} id={project.id} refreshProjectList={refreshProjectList}/>
+                        ))}
 
-                    {/* Add the rest of the project cards here */}
-                </div>
-                </body>
+                    </div>
+                    </body>
+                </>
+
             )}
         </>
     );

@@ -1,15 +1,5 @@
 import React from 'react';
-import {
-    MDBCard,
-    MDBCardImage,
-    MDBCardBody,
-    MDBCardTitle,
-    MDBCardText,
-    MDBCardLink,
-    MDBListGroup,
-    MDBListGroupItem
-} from 'mdb-react-ui-kit';
-import "../card_view.css"
+import "./card.css"
 import axios from "axios";
 import {getAuthToken} from "../../../Services/auth";
 import {useNavigate} from "react-router-dom";
@@ -24,8 +14,7 @@ export const Card= (props) => {
             },
     })
             .then(response => {
-                console.log('Card deleted successfully');
-                props.refreshCardList(); // Refresh the card list in the parent component
+                props.refreshCardList();
             })
             .catch(error => {
                 console.error('Error deleting card:', error);
@@ -42,8 +31,14 @@ export const Card= (props) => {
                 <p className="card-text">
                     {props.description}
                 </p>
-                <button className="btn btn-primary me-1" onClick={() => navigate("/AddTask")}>Update</button>
+                <button className="btn btn-primary me-1"
+                        onClick={() => navigate(`/UpdateTask/${props.cardId}`)}>Update
+                </button>
                 <button className="btn btn-secondary me-1" onClick={handleDelete}>Delete</button>
+                <button className="btn btn-primary me-1"
+                        onClick={() => navigate(`/TaskDetails/${props.cardId}`)}>Open Card
+                </button>
+
             </div>
         </div>
     );
