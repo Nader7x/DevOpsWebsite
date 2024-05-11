@@ -15,7 +15,8 @@ public static class CardMapper
             Description = cardModel.Description,
             Status = (Status)cardModel.Status,
             ProjectId = cardModel.ProjectId,
-            AssignedDeveloperId = cardModel.AssignedDeveloperId
+            AssignedDeveloperId = cardModel.AssignedDeveloperId,
+            ProjectDeveloper = cardModel.AssignedDeveloper.TocardDevDto()
         };
     }
 
