@@ -65,4 +65,11 @@ public static class ProjectMapper
              AssignedCards = projectDeveloper.AssignedCards.Select(c => c.ToCardDto())
          };
      }
+     public static CardDevDto TocardDevDto(this ProjectDeveloper projectDeveloper)
+     {
+         return new CardDevDto()
+         {
+             User = projectDeveloper.User.usertodev(),
+         };
+     }
 }
