@@ -17,9 +17,9 @@ public class ReplyController(IUnitOfWork unitOfWork, IMapper mapper) : Controlle
     [HttpPost("{commentId:int}")]
     public async Task<IActionResult> Create([FromRoute] int commentId, AddReplyDto replyDto)
     {
-        var user = await _unitOfWork.UserRepository.Getbyusername(User.GetUsername());
+        var user = User;
         var reply = _mapper.Map<Reply>(replyDto);
-        if (user != null) reply.UserId = user.Id;
+        reply.UserId = int.Parse(user.GetNameId() ?? string.Empty);
         reply.CardCommentId = commentId;
         await _unitOfWork.ReplyRepository.AddAsync(reply);
         await _unitOfWork.CompleteAsync();

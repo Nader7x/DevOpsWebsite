@@ -1,19 +1,21 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Opsphere.Data.Interfaces;
 using Opsphere.Data.Models;
 using Opsphere.Dtos.User;
 using Opsphere.Helpers;
 
 namespace Opsphere.Controllers;
-[ProducesResponseType(StatusCodes.Status200OK)]  
+
+[ProducesResponseType(StatusCodes.Status200OK)]
 [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 [ProducesResponseType(StatusCodes.Status400BadRequest)]
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 [ApiController]
 [Route("Opsphere/User")]
-public class UserController(ITokenService tokenService, IUnitOfWork unitOfWork , IMapper mapper) : ControllerBase
+public class UserController(ITokenService tokenService, IUnitOfWork unitOfWork, IMapper mapper) : ControllerBase
 {
     private readonly ITokenService _tokenService = tokenService;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
@@ -69,7 +71,6 @@ public class UserController(ITokenService tokenService, IUnitOfWork unitOfWork ,
             Email = user?.Email,
             Token = _tokenService.CreateToken(user)
         });
-
     }
 
     [HttpGet("GetCurrentUserName")]
@@ -79,35 +80,7 @@ public class UserController(ITokenService tokenService, IUnitOfWork unitOfWork ,
         return Task.FromResult<IActionResult>(Ok(User.GetUsername()));
     }
 
-    [HttpPatch("AcceptInvite/{userid:int}/Notification/{NotificationId:int}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Authorize(Roles = "Admin,Developer")]
-    public async Task<IActionResult> Accept([FromRoute]int userid ,[FromRoute] int NotificationId )
-    {
-        var projectDev = await _unitOfWork.ProjectDeveloperRepository.GetByDevIdAsync(userid);
-        var notification = await _unitOfWork.NotificationRepository.GetByIdAsync(NotificationId);
-        if (projectDev is null or { IsMemeber: true })
-        {
-            return BadRequest("you already a member or not invited");
-        }
-        projectDev.IsMemeber = true;
-        _unitOfWork.ProjectDeveloperRepository.UpdateAsync(projectDev);
-        await _unitOfWork.CompleteAsync();
-        notification.IsRead = true;
-        _unitOfWork.NotificationRepository.UpdateAsync(notification);
-        await _unitOfWork.CompleteAsync();
-        return Ok();
-    }
-    [HttpGet("UserNotifications/{userid:int}")]  
-    [Authorize(Roles = "Admin,Developer,TeamLeader")]
-    public async Task<IActionResult> GetUserNotifications([FromRoute] int userid)
-    {
-        var notifications = await _unitOfWork.NotificationRepository.UserNotificationsById(userid);
-        var orderedNotifications = notifications.OrderBy(n => n.NotificationDate);
-        var filteredNotifications = orderedNotifications.Where(notification => notification.IsRead == false);
-        return Ok(filteredNotifications);
-    }
+
     [HttpGet("/Developers")]
     public async Task<IActionResult> GetAllDevelopers()
     {
@@ -116,26 +89,58 @@ public class UserController(ITokenService tokenService, IUnitOfWork unitOfWork ,
         return Ok(devsDtos);
     }
 
-    [HttpDelete("Reject/{NotificationId:int}")]
+    [HttpGet("UserNotifications/{userid:int}")]
+    [Authorize(Roles = "Admin,Developer,TeamLeader")]
+    public async Task<IActionResult> GetUserNotifications([FromRoute] int userid)
+    {
+        var notifications = await _unitOfWork.NotificationRepository.UserNotificationsById(userid);
+        var orderedNotifications = notifications.OrderBy(n => n.NotificationDate);
+        var filteredNotifications = orderedNotifications.Where(notification => notification.IsRead == false);
+        return Ok(filteredNotifications);
+    }
+
+    [HttpPatch("AcceptInvite/{userid:int}/Notification/{NotificationId:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Authorize(Roles = "Admin,Developer")]
+    public async Task<IActionResult> Accept([FromRoute] int userid, [FromRoute] int NotificationId)
+    {
+        var projectDev = await _unitOfWork.ProjectDeveloperRepository.GetByDevIdAsync(userid);
+        var notification = await _unitOfWork.NotificationRepository.GetByIdAsync(NotificationId);
+        if (projectDev is null or { IsMemeber: true })
+        {
+            return BadRequest("you already a member or not invited");
+        }
+
+        projectDev.IsMemeber = true;
+        _unitOfWork.ProjectDeveloperRepository.UpdateAsync(projectDev);
+        await _unitOfWork.CompleteAsync();
+        notification.IsRead = true;
+        _unitOfWork.NotificationRepository.UpdateAsync(notification);
+        await _unitOfWork.CompleteAsync();
+        return Ok();
+    }
+
+    [HttpDelete("Reject/{notificationId:int}")]
     [Authorize(Roles = "Developer,Admin")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Reject([FromRoute]int NotificationId)
+    public async Task<IActionResult> Reject([FromRoute] int notificationId)
     {
-        var notification = await _unitOfWork.NotificationRepository.GetByIdAsync(NotificationId);
-        var user  = await _unitOfWork.UserRepository.Getbyusername(User.GetUsername());
-        if (user != null)
+        var notification = await _unitOfWork.NotificationRepository.GetByIdAsync(notificationId);
+        if (User.GetNameId().IsNullOrEmpty()) return NotFound("maybe your invitation expired");
+        var projectDev =
+            await _unitOfWork.ProjectDeveloperRepository.GetByDevIdAsync(int.Parse(User.GetNameId() ?? string.Empty));
+        if (projectDev is null or { IsTeamLeader: true, IsMemeber: true })
+            return NotFound("maybe your invitation expired or has been accepted already");
+        _unitOfWork.ProjectDeveloperRepository.DeleteAsync(projectDev);
+        await _unitOfWork.CompleteAsync();
+        if (notification != null)
         {
-            var projectDev = await _unitOfWork.ProjectDeveloperRepository.GetByDevIdAsync(user.Id);
-            if (projectDev == null || projectDev is { IsTeamLeader: true })
-                return NotFound("maybe your invitation expired");
-            _unitOfWork.ProjectDeveloperRepository.DeleteAsync(projectDev);
-            await _unitOfWork.CompleteAsync();
             notification.IsRead = true;
             _unitOfWork.NotificationRepository.UpdateAsync(notification);
-            await _unitOfWork.CompleteAsync();
-            return Ok("Rejected the invitation successfully successfully");
         }
-        return NotFound("maybe your invitation expired");  
+
+        await _unitOfWork.CompleteAsync();
+        return Ok("Rejected the invitation successfully successfully");
     }
-    
 }

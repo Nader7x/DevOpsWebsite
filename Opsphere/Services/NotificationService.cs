@@ -19,18 +19,18 @@ public class NotificationService : Hub<INotificationService>
         if (Context.User.Identity.IsAuthenticated)
         {
             userConnections.Add(Context.ConnectionId,Context.User.GetNameId());
-            var id = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            foreach (var keyval in userConnections)
-            {
-                if (keyval.Value == id)
-                {
-                    Clients.Client(keyval.Key).SendNotification(new Notification()
-                    {
-                        UserId = int.Parse(Context.User.GetNameId()),
-                        Content = $"Welcome Again bro {Context.User.GetUsername()}"
-                    }); 
-                }
-            }
+            // var id = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            // foreach (var keyval in userConnections)
+            // {
+            //     if (keyval.Value == id)
+            //     {
+            //         Clients.Client(keyval.Key).SendNotification(new Notification()
+            //         {
+            //             UserId = int.Parse(Context.User.GetNameId()),
+            //             Content = $"Welcome Again bro {Context.User.GetUsername()}"
+            //         }); 
+            //     }
+            // }
         }
         return base.OnConnectedAsync();
     }
